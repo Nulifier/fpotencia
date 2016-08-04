@@ -68,7 +68,7 @@ namespace fPotencia {
 
         Pesp = Sol.P;
         Qesp = Sol.Q;
-        
+
         if (!checks()) {
             throw std::invalid_argument(
                     "The circuit failed the solver compatibility test.");
@@ -98,7 +98,7 @@ namespace fPotencia {
     /*//////////////////////////////////////////////////////////////////////////
      * Calculate the slack bus power
      */
-    void NRpolarSolver::calculate_slack_power() {        
+    void NRpolarSolver::calculate_slack_power() {
         for (auto k: Model.slackBusIndices) {
             cx_double I(0.0, 0.0);
             for (uint j = 0; j < Model.buses.size(); j++) {
@@ -193,10 +193,8 @@ namespace fPotencia {
         PQPV.insert(PQPV.end(), LastPV.begin(), LastPV.end());
     }
 
-    /*//////////////////////////////////////////////////////////////////////////
-     * Calculate the jacobian of the circuit
-     */
-    void NRpolarSolver::Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv) {
+
+    void NRpolarSolver::jacobian(mat &J, vec &V, vec &D, uint npq, uint npv) {
         //matrix(rows, cols)
         uint npqpv = npq + npv;
         double val;
@@ -205,7 +203,7 @@ namespace fPotencia {
 
         J.setZero();
 
-        //J1 
+        //J1
         for (uint a = 0; a < npqpv; a++) { //rows
             k = PQPV[a];
             //diagonal
@@ -298,10 +296,10 @@ namespace fPotencia {
 
 
     }
-    
-    
+
+
     /*
-     
+
      def mu(Ybus, J, F, dV, dx, pvpq, pq):
     """
     Calculate the Iwamoto acceleration parameter as described in:
@@ -345,7 +343,7 @@ namespace fPotencia {
     roots = np.roots([g3, g2, g1, g0])
     # three solutions are provided, the first two are complex, only the real solution is valid
     return roots[2].real
-     
+
      */
 
 
@@ -370,41 +368,41 @@ namespace fPotencia {
 
         return x;
     }
-    
+
 
     double NRpolarSolver::mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv){
-        
-        
+
+
        // cout << "\n\n\nincV:\n" << dV << "\n\nincD:\n" << dD << "\n\ndx:\n" << dx <<  "\n\nF:\n" << F << endl;
-        
-        Jacobian(J2, dV, dD, npq, npv);
-        
+
+        jacobian(J2, dV, dD, npq, npv);
+
         //cout << "J2:\n" << J2 << endl;
-        
-        
+
+
         vec a = F;
         //cout << "a:\n" << F << endl;
-        
+
         vec b = J * (dx);
         //cout << "b:\n" << b << endl;
-        
-        
+
+
         vec c(2*npq+npv); //= dx. * b * 0.5;
         for (uint i=0;i<(2*npq+npv); i++) //this loop is because EIGEN does not want to perform this simple element wise vector multiplication...
             c(i) = dx.coeff(i) * b.coeff(i) * 0.5;
-                    
+
         //cout << "c:\n" << c << endl;
 
         double g0 = -1* a.dot(b);
         double g1 = b.dot(b) + 2 * a.dot(c);
         double g2 = -3.0 * b.dot(c);
         double g3 = 2.0 * c.dot(c);
-           
+
         double sol = solve3rdDegreePolynomial(g3, g2, g1, g0, 1.0);
-        return sol;         
+        return sol;
     }
-    
-    
+
+
 
     /*//////////////////////////////////////////////////////////////////////////
      * Calculate the power increments
@@ -427,18 +425,14 @@ namespace fPotencia {
     }
 
 
-    bool NRpolarSolver::converged(const vec& PQinc, uint npqpvpq) const
+    bool NRpolarSolver::converged(const vec& PQinc) const
     {
-        for (uint k = 0; k < npqpvpq; k++)
-            if (abs(PQinc.coeff(k)) > tolerance)
-                return false;
-
-        return true;
+        return PQinc.lpNorm<Infinity>() < tolerance;
     }
-    
-    
+
+
     void NRpolarSolver::get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv){
-    
+
         uint npqpv = npq + npv;
         uint k;
 
@@ -449,7 +443,7 @@ namespace fPotencia {
             if (a < npq)
                 incV(k) = X.coeff(a + npqpv);
         }
-    
+
     }
 
 
@@ -490,22 +484,22 @@ namespace fPotencia {
         vec X(npqpvpq);
         vec incV(Sol.Lenght);
         vec incD(Sol.Lenght);
-        
+
         // First shot: Perhaps the model already converged?
 
         get_power_inc(K, npq, npv);
-        auto didConverge = converged(K, npqpvpq);
+        auto didConverge = converged(K);
 
         for (unsigned i = 0; i < maxIterations && ! didConverge; ++i) {
-            Jacobian(J, Sol.V, Sol.D, npq, npv);
+            jacobian(J, Sol.V, Sol.D, npq, npv);
 
             Eigen::FullPivLU<mat>lu(J); //Full pivot LU
             X = lu.solve(K);
-            
+
             get_increments(X, incV, incD, npq, npv);
-            
+
             auto mu_ = mu(J, J2, K, incV, incD, X, npq, npv);
-            
+
             //upgrade the solution
             update_solution(X * mu_, npq, npv);
 
@@ -513,9 +507,9 @@ namespace fPotencia {
             //Calculate the increment of power for the new iteration
             get_power_inc(K, npq, npv);
 
-            didConverge = converged(K, npqpvpq);
+            didConverge = converged(K);
         }
-        
+
         //Calculate the reactive power for the PV buses:
 
         calculate_Q(npq, npv);
@@ -528,14 +522,14 @@ namespace fPotencia {
             return Solver::Solved;
         }
     }
-    
-    
-    
+
+
+
     /*This function updates the solver solution object power values using the
      * circuit's own solution power values. this is specially usefull when updating
      * the circuit power values while keeping the previous voltage solution
      */
-    void NRpolarSolver::update_solution_power_from_circuit(){    
+    void NRpolarSolver::update_solution_power_from_circuit(){
         Sol.P = Model.get_initial_solution().P;
         Sol.Q = Model.get_initial_solution().Q;
         Pesp = Sol.P;

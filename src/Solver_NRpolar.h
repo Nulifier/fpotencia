@@ -81,6 +81,18 @@ namespace fPotencia {
 
 
         /*!
+         * \brief Creates the Jacobian
+         *
+         * \param J
+         * \param V
+         * \param D
+         * \param npq
+         * \param npv
+         */
+        void jacobian(mat &J, vec &V, vec &D, uint npq, uint npv);
+
+
+        /*!
          * \brief Solves a polynomial of 3rd degree
          *
          * This method solves a polynomial defined by the coeffients
@@ -96,8 +108,13 @@ namespace fPotencia {
                 double x) const;
 
 
-        //! \brief Checks whether a particular solution converged
-        bool converged(vec const& PQinc, uint npqpvpq) const;
+        /*!
+         * \brief Checks whether a particular solution converged
+         *
+         * \param[in] PQinc The vector containing the increments (deltas) of
+         *  real and reactive power values for the next step of the iteration
+         */
+        bool converged(vec const& PQinc) const;
 
 
         /*!
@@ -111,7 +128,7 @@ namespace fPotencia {
 
 
         void update_solution_power_from_circuit();
-        
+
     private:
 
         vector<int> BUSES;
@@ -119,7 +136,7 @@ namespace fPotencia {
         vector<int> PQPV;
 
         vector<int> LastPQ;
-        
+
         vector<int> LastPV;
 
         vec Pesp;
@@ -128,8 +145,6 @@ namespace fPotencia {
 
         solution Sol;
 
-        void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv); //calculate the jacobian, J is passed by refference
-        
         double mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
         void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
 
@@ -140,10 +155,10 @@ namespace fPotencia {
         double P(uint k);
 
         void update_solution(vec X, uint npq, uint npv);
-        
+
         void get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv);
 
-        void calculate_slack_power(); //calculate the slack bus power        
+        void calculate_slack_power(); //calculate the slack bus power
 
 
         //! \brief Checks whether the solver can work on the given model
@@ -151,7 +166,7 @@ namespace fPotencia {
 
 
         void correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X);
-        
+
     };
 
 #endif	/* SOLVER_NRPOLAR_H */
