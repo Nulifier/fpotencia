@@ -18,6 +18,7 @@
 #include <string>
 
 #include "Bus.h"
+#include "Node.h"
 #include "fpotencia_libs.h"
 
 
@@ -28,7 +29,7 @@ namespace fPotencia {
     /*!
      * \brief The Generator class represents a generator in a power grid.
      */
-    class Generator
+    class Generator: public Node<Generator>
     {
     public:
 
@@ -42,42 +43,18 @@ namespace fPotencia {
 
 
         //! \brief Creates a new, unitialized, unconnected Generator object
-        explicit Generator();
-
-
-        //! \brief Returns the generator name
-        std::string const& name() const { return name_; }
-
-
-        //! \brief Sets the name of the generator, for prettyprinting.
-        Generator& name(std::string const& name)
+        explicit Generator():
+                Node<Generator>(),
+                voltage_(0.0),
+                voltageType_(Generator::pu),
+                power_(0.0, 0.0),
+                minQ_(0.0),
+                maxQ_(0.0)
         {
-            name_ = name;
-            return *this;
         }
 
 
-        //! \brief Connects the generator to a bus.
-        Generator& bus(Bus const& bus)
-        {
-            busIndex_ = bus.index;
-            return *this;
-        }
-
-
-        /*!
-         * \brief Returns the Bus the generator is connected to.
-         *
-         * If the generator has not been connected to a bus yet, this will
-         * return a `nullptr`!
-         *
-         * \return The Bus object, may be `nullptr`
-         */
-        size_t busIndex() const
-        {
-            assert(busIndex_ >= 0);
-            return busIndex_;
-        }
+        virtual ~Generator() {}
 
 
         //! \brief The voltage the generator supplies to the grid
@@ -154,15 +131,6 @@ namespace fPotencia {
 
 
     private:
-
-
-
-        //! \brief Optional name of the generator, for pretty-printing.
-        std::string name_;
-
-
-        //! \brief The index of the Bus we're connected to
-        ptrdiff_t busIndex_;
 
 
         //! \brief Voltage supplied by the generator

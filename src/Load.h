@@ -15,10 +15,8 @@
 #define	LOAD_H
 
 
-#include <string>
-
-
 #include "Bus.h"
+#include "Node.h"
 #include "fpotencia_libs.h"
 
 
@@ -29,12 +27,18 @@ namespace fPotencia {
      * \brief The Load class signifies a load that draws real and reactive
      *  power from the grid.
      */
-    class Load {
+    class Load: public Node<Load>
+    {
     public:
 
 
         //! \brief Creates a new load object and initializes all values to 0
-        explicit Load();
+        explicit Load(): Node<Load>(), power_(0, 0)
+        {
+        }
+
+
+        virtual ~Load() {}
 
 
         //! \brief Returns the power as complex number
@@ -73,41 +77,7 @@ namespace fPotencia {
         }
 
 
-        //! \brief Connects the load to a bus
-        Load& bus(Bus const& bus)
-        {
-            busIndex_ = bus.index;
-            return *this;
-        }
-
-
-        size_t busIndex() const
-        {
-            assert(busIndex_ >= 0);
-            return busIndex_;
-        }
-
-
-        //! \brief Retrieves the node's name
-        std::string const& name() const
-        {
-            return name_;
-        }
-
-
-        //! \brief Sets a describing name of the node (for pretty-printing)
-        Load& name(std::string const& name)
-        {
-            name_ = name;
-            return *this;
-        }
-
-
     private:
-
-
-        //! \brief The name, for readability
-        std::string name_;
 
 
         /*!
@@ -117,10 +87,6 @@ namespace fPotencia {
          * consumed, the imaginary part the reactive power that is consumed.
          */
         cx_double power_;
-
-
-        //! \brief Index of the bus we're connected to.
-        ptrdiff_t busIndex_;
     };
 }
 
