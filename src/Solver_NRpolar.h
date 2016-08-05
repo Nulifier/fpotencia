@@ -122,9 +122,9 @@ namespace fPotencia {
 
 
         /*!
-         * \brief Calculates the values for $\Delta P$ and $\Delta Q$, i.e.,
-         *  the values by which each load and generator power flow value
-         *  is adjusted.
+         * \brief Calculates the values for \f$ \Delta P \f$
+         *  and \f$ \Delta Q \f$, i.e., the values by which each load and
+         *  generator power flow value is adjusted.
          *
          * These values are the convergence criterium: If each of them is
          * below the tolerance set, the algorithm has converged and the solver
@@ -134,7 +134,7 @@ namespace fPotencia {
          *
          * \param[in] numGenerators Number of generators in the circuit
          *
-         * \return The vector containing all $\Delta P$ and $\Delta Q$ values
+         * \return The vector containing all delta P and delta Q values
          */
         void adjustDeltaPQ(vec& pqDeltas, uint numLoads, uint numGenerators);
 
