@@ -269,7 +269,7 @@ namespace fPotencia {
         // All buses which carry loads and are not yet classified, are PQs:
 
         for (auto const& load: loads) {
-            auto& bus = buses.at(load.bus);
+            auto& bus = buses.at(load.busIndex());
             if (bus.Type == undefined_bus_type) {
                 bus.Type = PQ;
             }
@@ -338,8 +338,8 @@ namespace fPotencia {
         }
 
         for (const auto& load: loads) {
-            if (std::abs(load.power) > maximum) {
-                maximum = std::abs(load.power.real());
+            if (std::abs(load.power()) > maximum) {
+                maximum = std::abs(load.realPower());
             }
         }
 
@@ -379,8 +379,8 @@ namespace fPotencia {
         }
 
         for (const auto& load: loads) {
-            auto& bus = buses.at(load.bus);
-            bus.connected_power -= load.power;
+            auto& bus = buses.at(load.busIndex());
+            bus.connected_power -= load.power();
         }
 
         sol.resize(buses.size());

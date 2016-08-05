@@ -75,7 +75,7 @@ namespace fPotencia {
          */
         size_t busIndex() const
         {
-            assert(busIndex_ > 0);
+            assert(busIndex_ >= 0);
             return busIndex_;
         }
 
