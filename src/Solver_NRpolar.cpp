@@ -194,8 +194,8 @@ namespace fPotencia {
     }
 
 
-    void NRpolarSolver::jacobian(mat &J, vec &V, vec &D, uint npq, uint npv) {
-        //matrix(rows, cols)
+    void NRpolarSolver::jacobian(mat &J, vec &V, vec &D, uint npq, uint npv)
+    {
         uint npqpv = npq + npv;
         double val;
         uint k, j;
@@ -370,58 +370,56 @@ namespace fPotencia {
     }
 
 
-    double NRpolarSolver::mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv){
-
-
-       // cout << "\n\n\nincV:\n" << dV << "\n\nincD:\n" << dD << "\n\ndx:\n" << dx <<  "\n\nF:\n" << F << endl;
-
-        jacobian(J2, dV, dD, npq, npv);
-
-        //cout << "J2:\n" << J2 << endl;
-
+    double NRpolarSolver::mu(
+            mat const& J,
+            mat& J2,
+            vec const& F,
+            vec& dV,
+            vec& dD,
+            vec& dx,
+            size_t numLoads,
+            size_t numGenerators)
+    {
+        jacobian(J2, dV, dD, numLoads, numGenerators);
 
         vec a = F;
-        //cout << "a:\n" << F << endl;
-
         vec b = J * (dx);
-        //cout << "b:\n" << b << endl;
+        vec c(dx.size());
+        assert(c.size() == 2*numLoads + numGenerators);
+        assert(dx.size() == b.size());
 
-
-        vec c(2*npq+npv); //= dx. * b * 0.5;
-        for (uint i=0;i<(2*npq+npv); i++) //this loop is because EIGEN does not want to perform this simple element wise vector multiplication...
+        for (vec::Index i = 0; i < dx.size(); i++) {
             c(i) = dx.coeff(i) * b.coeff(i) * 0.5;
+        }
 
-        //cout << "c:\n" << c << endl;
-
-        double g0 = -1* a.dot(b);
-        double g1 = b.dot(b) + 2 * a.dot(c);
+        double g0 = -1.0 * a.dot(b);
+        double g1 = b.dot(b) + 2.0 * a.dot(c);
         double g2 = -3.0 * b.dot(c);
         double g3 = 2.0 * c.dot(c);
 
-        double sol = solve3rdDegreePolynomial(g3, g2, g1, g0, 1.0);
-        return sol;
+        return solve3rdDegreePolynomial(g3, g2, g1, g0, 1.0);
     }
 
 
+    void NRpolarSolver::adjustDeltaPQ(
+            vec& pqDeltas,
+            uint numLoads,
+            uint numGenerators)
+    {
+        assert(pqDeltas.size() == 2 * numLoads + numGenerators);
+        auto npqpv = numLoads + numGenerators;
+        pqDeltas.setZero();
 
-    /*//////////////////////////////////////////////////////////////////////////
-     * Calculate the power increments
-     */
-    void NRpolarSolver::get_power_inc(vec& PQinc, uint npq, uint npv) {
+        for (vec::Index i = 0; i < npqpv; i++) {
+            // For both buses, calculate the delta P:
 
-        uint npqpv = npq + npv;
-        uint k;
-        PQinc.setZero();
+            auto k = PQPV[i];
+            pqDeltas(i) = Pesp.coeff(k) - P(k);
 
-        for (uint a = 0; a < npqpv; a++) {
-            //For PQ and PV buses; calculate incP
-            k = PQPV[a];
-            PQinc(a) = Pesp.coeff(k) - P(k);
-
-            if (a < npq) //only for PQ buses, calculate incQ
-                PQinc(a + npqpv) = Qesp.coeff(k) - Q(k);
+            if (i < numLoads) { // Only for PQ buses, also calculate Q:
+                pqDeltas(i + npqpv) = Qesp.coeff(k) - Q(k);
+            }
         }
-
     }
 
 
@@ -480,14 +478,14 @@ namespace fPotencia {
         //System : J*X = K
         mat J(npqpvpq, npqpvpq);
         mat J2(npqpvpq, npqpvpq);
-        vec K(npqpvpq);
         vec X(npqpvpq);
+        vec K(npqpvpq);
         vec incV(Sol.Lenght);
         vec incD(Sol.Lenght);
 
         // First shot: Perhaps the model already converged?
 
-        get_power_inc(K, npq, npv);
+        adjustDeltaPQ(K, npq, npv);
         auto didConverge = converged(K);
 
         for (unsigned i = 0; i < maxIterations && ! didConverge; ++i) {
@@ -504,8 +502,9 @@ namespace fPotencia {
             update_solution(X * mu_, npq, npv);
 
 
-            //Calculate the increment of power for the new iteration
-            get_power_inc(K, npq, npv);
+            //Calculate the delta P/delta Q values:
+
+            adjustDeltaPQ(K, npq, npv);
 
             didConverge = converged(K);
         }

@@ -105,7 +105,38 @@ namespace fPotencia {
                 double c,
                 double b,
                 double a,
-                double x) const;
+                double x)
+                const;
+
+
+        //! \brief Compute the acceleration factor
+        double mu(
+                mat const& J,
+                mat &J2,
+                vec const& F,
+                vec &dV,
+                vec &dD,
+                vec& dx,
+                size_t numLoads,
+                size_t numGenerators);
+
+
+        /*!
+         * \brief Calculates the values for $\Delta P$ and $\Delta Q$, i.e.,
+         *  the values by which each load and generator power flow value
+         *  is adjusted.
+         *
+         * These values are the convergence criterium: If each of them is
+         * below the tolerance set, the algorithm has converged and the solver
+         * is finished.
+         *
+         * \param[in] numLoads Number of loads in the circuit
+         *
+         * \param[in] numGenerators Number of generators in the circuit
+         *
+         * \return The vector containing all $\Delta P$ and $\Delta Q$ values
+         */
+        void adjustDeltaPQ(vec& pqDeltas, uint numLoads, uint numGenerators);
 
 
         /*!
@@ -145,8 +176,7 @@ namespace fPotencia {
 
         solution Sol;
 
-        double mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
-        void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
+
 
         void calculate_Q(uint npq, uint npv); //calculate the reative power at the PV buses
 
