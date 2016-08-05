@@ -10,8 +10,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <complex>   
-#include "Circuit.h"
+#include <complex>
+#include <algorithm>
 
 #include "Bus.h"
 #include "Load.h"
@@ -20,7 +20,11 @@
 #include "Generator.h"
 #include "Shunt.h"
 
+#include "Circuit.h"
+
+
 using namespace Eigen;
+
 
 namespace fPotencia {
 
@@ -38,66 +42,35 @@ namespace fPotencia {
 
     /*
      * Add bus to the class.
-     * 
-     * This function adds a bus object and assigns an ordinal number to the bus 
+     *
+     * This function adds a bus object and assigns an ordinal number to the bus
      * object incomming to the function, so that object, even externally will
      * be refferenced to this circuit.
-     * 
+     *
      * I want to force all the buses to have different names.
-     * 
+     *
      * This is usefull to tell the branch elements the indices of the buses
      * where it is connected to.
      */
-    void Circuit::add_Bus(Bus &bus) {
-        if (find_bus(bus.Name) == -1) {
-
-            if (buses.size() == 0)
-                bus.index = 0;
-            else
-                bus.index = buses[buses.size() - 1].index + 1; //Sequencial bus numbering
-
-            buses.push_back(bus);
+    void Circuit::add_Bus(Bus &bus)
+    {
+        if (buses.empty()) {
+            bus.index = 0;
         } else {
-            cout << "The bus " << bus.Name << " has been already added, therefore this object is not being added" << endl;
+            bus.index = buses.back().index + 1;
         }
+
+        buses.emplace_back(bus);
     }
 
-    /*
-     * Remove bus by object: Removes a bus from the list, but all the buses
-     * indices remain the same
-     */
-    void Circuit::remove_Bus(Bus bus) {
-        int index = find_bus(bus.Name);
-        buses.erase(buses.begin() + index);
-    }
-
-    /*
-     * Remove bus by name: Removes a bus from the list, but all the buses
-     * indices remain the same
-     */
-    void Circuit::remove_Bus(string bus_name) {
-        int index = find_bus(bus_name);
-        buses.erase(buses.begin() + index);
-    }
-
-    /*Get bus index given the bus name*/
-    int Circuit::find_bus(string bus_name) {
-        bool found = false;
-        for (uint i = 0; i < buses.size(); i++)
-            if (!bus_name.compare(buses[i].Name))
-                return i;
-
-        if (!found)
-            return -1;
-    }
 
     /*
      * This function composes the circuit admittance matrix
-     * 
+     *
      * Each circuit branch element has a function to compose its own
      * admittance matrix. As each branch element "knows" the indices of the
-     * busbars where it is connected, it can create an admittance matrix of the 
-     * dimension of the crcuit admittance matrix. If those elemenr Y matrices 
+     * busbars where it is connected, it can create an admittance matrix of the
+     * dimension of the crcuit admittance matrix. If those elemenr Y matrices
      * are Sparse, then the mis use of memory is minimal ans the composition
      * of the circuit Y matriz becomes super simple: the sum of all the
      * branc elements Y_element matrices created as sparse matrices.
@@ -128,7 +101,7 @@ namespace fPotencia {
             }
 
             //Add the transforers admittance matrices.
-            //The transformer model is formulated in such way that the values 
+            //The transformer model is formulated in such way that the values
             //come already in per unit
             for (uint i = 0; i < transformers.size(); i++) {
                 transformers[i].get_element_Y(n, Y);
@@ -208,11 +181,11 @@ namespace fPotencia {
 
     /*
      * This function creates the reduced impedance matrix of the circuit.
-     * 
+     *
      * This matrix contains a null column and row in the indices of the slack
      * (or VD) buses. This is usefull for the numerical algorithms to reach
      * a good solution
-     * 
+     *
      * Only applicable after Y is created
      */
     void Circuit::compose_Z() {
@@ -241,81 +214,94 @@ namespace fPotencia {
         Z = lu2.inverse();
     }
 
-    /* Given the circuir objects, it build the relations among them: Impedance 
+    /* Given the circuir objects, it build the relations among them: Impedance
      * and admittance matrices.
-     * 
+     *
      * This should be called every time the circuit topology changes
      */
-    void Circuit::compile(bool guess_angles) {
+    void Circuit::compile(bool guess_angles)
+    {
         // Make sure we do not double-add:
 
         loadBusIndices.clear();
         slackBusIndices.clear();
         generatorBusIndices.clear();
 
-        //Calculate the base power in a comparable scale to the power in the grid
-        double maxpower = get_max_power();
-        //cout << "max power:" << maxpower << endl;
+        double maxpower = realPowerMaximum();
         Sbase = pow(10, 1 + floor(log10(maxpower)));
 
-        //Calculate the bus types
+        // Set bus types:
 
-        //the presence of an external grid makes the bus VD (or slack)
-        for (uint i = 0; i < externalGrids.size(); i++)
-            if (buses[externalGrids[i].bus].Type == undefined_bus_type) {
-                buses[externalGrids[i].bus].Type = VD;
-            }
 
-        /*the presence of an generator makes the bus PV (if it is voltage
-         * controlled) or PQ otherwise
-         */
-        for (uint i = 0; i < generators.size(); i++) {
-            if (buses[generators[i].bus].Type == undefined_bus_type) {
-                if (generators[i].voltage_controlled) {
-                    /* if the generator is set to contol the voltage
-                     * then, make the bus a PV bus, otherwise leve the bus fo the
-                     * last loop to make it a PQ bus
-                     */
-                    buses[generators[i].bus].Type = PV;
-                }
+        // All external grids make their respecitve buses VD buses:
+
+        for (const auto& externalGrid: externalGrids) {
+            auto& bus = buses.at(externalGrid.bus);
+            if (bus.Type == undefined_bus_type) {
+                bus.Type = VD;
             }
-            //apply generator limits conversion to the buses
-            buses[generators[i].bus].min_q = generators[i].min_Q / Sbase;
-            buses[generators[i].bus].max_q = generators[i].max_Q / Sbase;
-            if (generators[i].Vset_in_per_unit)
-                buses[generators[i].bus].v_set_point = generators[i].voltage_set_point;
-            else
-                buses[generators[i].bus].v_set_point = generators[i].voltage_set_point / buses[generators[i].bus].nominal_voltage;
         }
 
-        //the presence of a load makes the bus PQ if it has not ben classified
-        for (uint i = 0; i < loads.size(); i++)
-            if (buses[loads[i].bus].Type == undefined_bus_type) {
-                buses[loads[i].bus].Type = PQ;
-                //PQ_list.push_back(buses[loads[i].bus].index);
+        /* Iterate over all generator buses and make them PV buses if the
+         * generator is indeed supplying voltage; otherwise, the bus is a PQ
+         * bus.
+         */
+
+        for (auto const& generator: generators) {
+            auto& bus = buses.at(generator.busIndex());
+
+            if (undefined_bus_type == bus.Type) {
+                bus.Type = PV;
             }
 
-        //not clasified buses are set to PQ mode
+            // Apply generator limits conversion to the buses:
+
+            bus.min_q = generator.reactivePowerLimits().first / Sbase;
+            bus.max_q = generator.reactivePowerLimits().second / Sbase;
+
+            if (Generator::pu == generator.voltageType()) {
+                bus.v_set_point = generator.voltage();
+            } else { // absolute volts:
+                bus.v_set_point = generator.voltage() / bus.nominal_voltage;
+            }
+        }
+
+        // All buses which carry loads and are not yet classified, are PQs:
+
+        for (auto const& load: loads) {
+            auto& bus = buses.at(load.bus);
+            if (bus.Type == undefined_bus_type) {
+                bus.Type = PQ;
+            }
+        }
+
+        // ... finally, all other, non-qualified buses are PQ buses:
+
         Vbase = 0.0;
-        for (uint i = 0; i < buses.size(); i++) {//final check
-            if (buses[i].Type == undefined_bus_type) {
-                buses[i].Type = PQ;
+        for (auto& bus: buses) {
+            if (bus.Type == undefined_bus_type) {
+                bus.Type = PQ;
             }
 
-            if (buses[i].nominal_voltage > Vbase)
-                Vbase = buses[i].nominal_voltage; //set Vbase as the biggest voltage
+
+            // Rise Vbase, if necessary:
+
+            if (bus.nominal_voltage > Vbase) {
+                Vbase = bus.nominal_voltage;
+            }
 
 
-            //set the bus types lists
-            switch (buses[i].Type) {
+            // Build the bus lists:
+
+            switch (bus.Type) {
             case VD:
-                slackBusIndices.push_back(buses[i].index);
+                slackBusIndices.push_back(bus.index);
                 break;
             case PQ:
-                loadBusIndices.push_back(buses[i].index);
+                loadBusIndices.push_back(bus.index);
                 break;
             case PV:
-                generatorBusIndices.push_back(buses[i].index);
+                generatorBusIndices.push_back(bus.index);
                 break;
             default:
                 throw std::invalid_argument("Unknown bus type");
@@ -340,54 +326,62 @@ namespace fPotencia {
             correct_initial_solution();
     }
 
-    /*
-     * Examines the load and generatio objects and returns the maximum value
-     * of the load or generation power in absolute value
-     */
-    double Circuit::get_max_power() {
-        double mx = 0;
 
-        //Calculate the bus connected generation and load
-        for (uint i = 0; i < generators.size(); i++)
-            if (abs(generators[i].power) > mx)
-                mx = abs(generators[i].power.real());
+    double Circuit::realPowerMaximum() const
+    {
+        double maximum = 0.0;
 
-        for (uint i = 0; i < loads.size(); i++)
-            if (abs(loads[i].power) > mx)
-                mx = abs(loads[i].power.real());
+        for (const auto& generator: generators) {
+            if (std::abs(generator.power()) > maximum) {
+                maximum = std::abs(generator.realPower());
+            }
+        }
 
-        return mx;
+        for (const auto& load: loads) {
+            if (std::abs(load.power) > maximum) {
+                maximum = std::abs(load.power.real());
+            }
+        }
+
+        return maximum;
     }
+
 
     /*
      * Generates the Circuit initial solution.
-     * 
+     *
      * The circuit object contains two solutions that are the same;
-     * - sol: the polar solution, where the voltage is in polar mode and the 
+     * - sol: the polar solution, where the voltage is in polar mode and the
      *        power is in cartesian mode
      * - cx_sol: where the voltage and the power are in cartesian mode
-     * 
+     *
      * Both solutions contain the circuit initial guess of the solution
      * in per unit values of the voltage and the power. This translates to
      * - Voltage = 1 +0j
-     * - Power = sum of the bus connected load and generation power divided by 
+     * - Power = sum of the bus connected load and generation power divided by
      *           the base power Sbase.
-     * 
+     *
      * Sbase is calculated to match the order of the circuit power values.
      */
-    void Circuit::generate_initial_solution(bool keep_last_solution) {
+    void Circuit::generate_initial_solution(bool keep_last_solution)
+    {
+        // Reset all powers:
 
-        //Initialize all powers
-        for (uint i = 0; i < buses.size(); i++) {
-            buses[i].connected_power = cx_double(0.0, 0.0);
+        for (auto& bus: buses) {
+            bus.connected_power = cx_double(0.0, 0.0);
         }
 
-        //Calculate the bus connected generation and load
-        for (uint i = 0; i < generators.size(); i++)
-            buses[generators[i].bus].connected_power += generators[i].power;
+        // Calculate the bus connected generation and load:
 
-        for (uint i = 0; i < loads.size(); i++)
-            buses[loads[i].bus].connected_power -= loads[i].power;
+        for (auto const& generator: generators) {
+            auto& bus = buses.at(generator.busIndex());
+            bus.connected_power += generator.power();
+        }
+
+        for (const auto& load: loads) {
+            auto& bus = buses.at(load.bus);
+            bus.connected_power -= load.power;
+        }
 
         sol.resize(buses.size());
         cx_sol.resize(buses.size());
@@ -430,11 +424,11 @@ namespace fPotencia {
     }
 
     /*
-     * This class generates an initial estimate of the voltage angles by 
+     * This class generates an initial estimate of the voltage angles by
      * running a DC Power Flow simulation. This simulation is reduced
-     * to the multiplication of the Z matrix of the circuit by the active 
+     * to the multiplication of the Z matrix of the circuit by the active
      * power vector due to a number of assumntions (quite unrealistic)
-     * This voltage angles solution is quite usefull to initialize the 
+     * This voltage angles solution is quite usefull to initialize the
      * solution to be sent to bigger AC solvers.
      */
     void Circuit::correct_initial_solution() {
@@ -593,13 +587,13 @@ namespace fPotencia {
 
     /*
      * Checks how much does the solution diverge
-     * 
+     *
      * The vector S has to be equal to Vx(YxV)* for a perfect solution.
      * The vector S is calculated by any of the AC or DC solvers
-     * 
+     *
      * S = VxI* is the most fundametal equation in the power flow simulation
-     * if it is fullfilled the circuit has reached a valuable solution, 
-     * however, because of the use of numerical algorithms, the equality is 
+     * if it is fullfilled the circuit has reached a valuable solution,
+     * however, because of the use of numerical algorithms, the equality is
      * never reached and therefoe we need to stand a certain threshold of
      * inequality: S = threshold * (VxI*) where I* = (YxV)*
      */
@@ -629,36 +623,4 @@ namespace fPotencia {
 
         mismatch /= n;
     }
-
-    /*This function sets the load and generation power values (in actual values
-     * not in p.u) and updates the solution objects
-     */
-    void Circuit::setPowerValues(double loadP[], double loadQ[], double genP[], double genQ[]) {
-
-        if (sizeof (loadP) != sizeof (loadQ))
-            throw std::invalid_argument("setPowerValues: The size of the load vectors are different");
-
-        if (sizeof (loadP) != loads.size())
-            throw std::invalid_argument("setPowerValues: The size of the load vectors does not match the loads size");
-
-        if (sizeof (genP) != sizeof (genQ))
-            throw std::invalid_argument("setPowerValues: The size of the generator vectors are different");
-
-        if (sizeof (genP) != generators.size())
-            throw std::invalid_argument("setPowerValues: The size of the load vectors does not match the loads size");
-
-
-        //Set the load values
-        for (uint i = 0; i < loads.size(); i++)
-            loads[i].power = cx_double(loadP[i], loadQ[i]);
-
-
-        //Set the generation values
-        for (uint i = 0; i < generators.size(); i++)
-            generators[i].power = cx_double(genP[i], genQ[i]);
-
-        //Update the solution but keeping the previous values of voltage (and Q, D in case of PV buses)
-        generate_initial_solution(true);
-    }
-
 }

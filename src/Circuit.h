@@ -138,25 +138,18 @@ namespace fPotencia {
 
         /*
          * Prepares the circuit for the solver.
-         * Usually it only needs to be done once, unless the circuit topology 
+         * Usually it only needs to be done once, unless the circuit topology
          * changes. i.e. addition of a line
          */
         void compile(bool guess_angles);
 
         /*
          * Adds a bus to the busses list.
-         * Busses must be added like this, becouse this function asigns them a 
+         * Busses must be added like this, becouse this function asigns them a
          * number
          */
         void add_Bus(Bus &bus);
 
-        /*
-         */
-        void remove_Bus(Bus bus);
-
-        /*
-         */
-        void remove_Bus(string bus_name);
 
         /*
          */
@@ -179,12 +172,12 @@ namespace fPotencia {
         double B(int i, int j);
 
         /*
-         * Checks the correctness of the powr flow of the circuit current 
+         * Checks the correctness of the powr flow of the circuit current
          * solution.
          * Checks the equation S= Vx(YxV)*
          */
         void check_solution();
-        
+
         /*
          * Performs a DC power flow to calculate an initial guess of the circuit
          * voltage angles that remain saved at the vector 'dc_angles'
@@ -195,7 +188,7 @@ namespace fPotencia {
          * Prints in the console the circuit solution
          */
         void print();
-        
+
         void print_buses_state();
 
         /*
@@ -208,12 +201,6 @@ namespace fPotencia {
          */
         void printMat(sp_mat m, string header);
 
-        /* This function sets the load and generation power values (in actual 
-         * values not in p.u) and updates the solution objects, keeping the 
-         * lattest voltages. This is usefull for continuation power flow, where
-         * the previous soution is recycled.
-         */
-        void setPowerValues(double loadP[], double loadQ[], double genP[], double genQ[]);
 
     private:
 
@@ -227,29 +214,22 @@ namespace fPotencia {
          */
         void expandOnPoint(cx_mat& matrix, unsigned int k);
 
-        /*
-         * Returns the index of a bus given the bus object
-         */
-        int find_bus(Bus bus);
-
-        /*
-         * Returns the index of a bus given the bus name
-         */
-        int find_bus(string bus_name);
 
         /*
          * Generates the circuit initial solutions
          */
         void generate_initial_solution(bool keep_last_solution = false);
 
-        
-        /*
-         * Returns the maximum power in abslute value connected to a bus bar
+
+        /*!
+         * \brief Retrieves the maximum power in abslute value connected to
+         *  a busbar.
          */
-        double get_max_power();
+        double realPowerMaximum() const;
+
 
         /*
-         * Calculates the current and power flows on the branch elements given 
+         * Calculates the current and power flows on the branch elements given
          * the solution (the solution is calculates by a solver module)
          */
         void calculate_flows(cx_solution sol);
@@ -266,7 +246,7 @@ namespace fPotencia {
         void compose_Z();
 
         /*
-         * Vector of voltage angles obtained in the function 
+         * Vector of voltage angles obtained in the function
          * 'correct_initial_solution()'
          */
         vec dc_angles;
@@ -277,13 +257,13 @@ namespace fPotencia {
         solution sol;
 
         /*
-         * Solution for cartesian voltage solvers like the Gauss (Z-Matrix) 
+         * Solution for cartesian voltage solvers like the Gauss (Z-Matrix)
          * solver
          */
         cx_solution cx_sol;
 
         /*
-         * Default base power, but it is updated to a suitable 
+         * Default base power, but it is updated to a suitable
          * one when compiling the circuit
          */
         double Sbase = 100;
