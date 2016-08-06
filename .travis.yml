@@ -1,0 +1,6 @@
+language: cpp,
+script: cmake,
+compiler:
+    - gcc,
+    - clang
+install: apt-get install  libeigen3-dev libgtest-dev
