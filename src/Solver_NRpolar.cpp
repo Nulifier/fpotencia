@@ -149,50 +149,6 @@ namespace fPotencia {
         return Sol.V.coeff(k) * val;
     }
 
-    /*
-     * This function corects the PV buses that exeed the reative power limit
-     */
-    void NRpolarSolver::correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X) {
-
-        /*Find the PV buses that violate the reative power limit*/
-        vector<int> lst;
-        uint k;
-        for (uint i = npq; i < npq + npv; i++) {
-            k = PQPV[i];
-            if (Model.buses[k].max_q != 0.0) {
-                if (Sol.Q(k) >= Model.buses[k].max_q) {
-                    Sol.Q(k) = Model.buses[k].max_q; //truncate Q to the limit
-                    lst.push_back(k); //add the PV bus to the list to be treated as a PQ bus
-                    std::cout << "PV to PQ: " << Model.buses[k].Name << std::endl;
-                }
-            } else {
-                std::cout << "Probably invalid reactie power value at bus " << Model.buses[k].Name << std::endl;
-            }
-        }
-
-        /*Change the lists and arrays size to accomodate the new situation*/
-        npq += lst.size();
-        npv -= lst.size();
-        uint npqpvpq = 2 * npq + npv; //size of the arrays
-
-        //Resize the linear system, since if npq and npv vary their size vary as well
-        J = mat(npqpvpq, npqpvpq);
-        K = vec(npqpvpq);
-        X = vec(npqpvpq);
-
-        //add the PV buses indices from lst to the PQ list
-        LastPQ.insert(LastPQ.end(), lst.begin(), lst.end());
-
-        //Remove the same lst indices fromthe PV list
-        for (uint k : lst)
-            LastPV.erase(std::remove(LastPV.begin(), LastPV.end(), k), LastPV.end());
-
-        PQPV.clear();
-        PQPV.reserve(LastPQ.size() + LastPV.size()); // preallocate memory
-        PQPV.insert(PQPV.end(), LastPQ.begin(), LastPQ.end());
-        PQPV.insert(PQPV.end(), LastPV.begin(), LastPV.end());
-    }
-
 
     void NRpolarSolver::jacobian(mat &J, vec &V, vec &D, uint npq, uint npv)
     {
@@ -298,55 +254,6 @@ namespace fPotencia {
     }
 
 
-    /*
-
-     def mu(Ybus, J, F, dV, dx, pvpq, pq):
-    """
-    Calculate the Iwamoto acceleration parameter as described in:
-    "A Load Flow Calculation Method for Ill-Conditioned Power Systems" by Iwamoto, S. and Tamura, Y.
-    Args:
-        Ybus: Admittance matrix
-        J: Jacobian matrix
-        F: mismatch vector
-        dV: voltage increment (in complex form)
-        dx: solution vector as calculated dx = solve(J, F)
-        pvpq: array of the pq and pv indices
-        pq: array of the pq indices
-
-    Returns:
-        the Iwamoto's optimal multiplier for ill conditioned systems
-    """
-    # evaluate the Jacobian of the voltage derivative
-    dS_dVm, dS_dVa = dSbus_dV(Ybus, dV)  # compute the derivatives
-
-    J11 = dS_dVa[array([pvpq]).T, pvpq].real
-    J12 = dS_dVm[array([pvpq]).T, pq].real
-    J21 = dS_dVa[array([pq]).T, pvpq].imag
-    J22 = dS_dVm[array([pq]).T, pq].imag
-
-    # theoretically this is the second derivative matrix
-    # since the Jacobian has been calculated with dV instead of V
-    J2 = vstack([
-            hstack([J11, J12]),
-            hstack([J21, J22])
-            ], format="csr")
-
-    a = F
-    b = J * dx
-    c = 0.5 * dx * J2 * dx
-
-    g0 = -a.dot(b)
-    g1 = b.dot(b) + 2 * a.dot(c)
-    g2 = -3.0 * b.dot(c)
-    g3 = 2.0 * c.dot(c)
-
-    roots = np.roots([g3, g2, g1, g0])
-    # three solutions are provided, the first two are complex, only the real solution is valid
-    return roots[2].real
-
-     */
-
-
     double NRpolarSolver::solve3rdDegreePolynomial(
             double d,
             double c,
@@ -427,14 +334,14 @@ namespace fPotencia {
     void NRpolarSolver::get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv){
 
         uint npqpv = npq + npv;
-        uint k;
 
         for (uint a = 0; a < npqpv; a++) {
-            k = PQPV[a];
+            auto k = PQPV[a];
             incD(k) = X.coeff(a);
 
-            if (a < npq)
+            if (a < npq) {
                 incV(k) = X.coeff(a + npqpv);
+            }
         }
 
     }
@@ -514,18 +421,4 @@ namespace fPotencia {
             return Solver::Solved;
         }
     }
-
-
-
-    /*This function updates the solver solution object power values using the
-     * circuit's own solution power values. this is specially usefull when updating
-     * the circuit power values while keeping the previous voltage solution
-     */
-    void NRpolarSolver::update_solution_power_from_circuit(){
-        Sol.P = Model.get_initial_solution().P;
-        Sol.Q = Model.get_initial_solution().Q;
-        Pesp = Sol.P;
-        Qesp = Sol.Q;
-    }
-
 }

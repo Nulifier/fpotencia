@@ -155,9 +155,8 @@ namespace fPotencia {
         virtual Solver::Result powerFlow(Circuit& grid) override;
 
 
-        void update_solution_power_from_circuit();
-
     private:
+
 
         vector<int> BUSES;
 
@@ -190,10 +189,6 @@ namespace fPotencia {
 
         //! \brief Checks whether the solver can work on the given model
         bool checks() const;
-
-
-        void correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X);
-
     };
 
 #endif	/* SOLVER_NRPOLAR_H */
