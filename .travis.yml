@@ -5,7 +5,7 @@ compiler:
     - clang
 sudo: required
 dist: trusty
-install: sudo apt-get install  libeigen3-dev libboost-all-dev libgtest-dev
+install: sudo apt-get install -y  libeigen3-dev libboost-all-dev libgtest-dev
 before_script:
     - mkdir Build
     - cd Build
