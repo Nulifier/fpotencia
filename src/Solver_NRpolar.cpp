@@ -371,21 +371,16 @@ namespace fPotencia {
 
 
     double NRpolarSolver::mu(
-            mat const& J,
-            mat& J2,
-            vec const& F,
-            vec& dV,
-            vec& dD,
+            mat const& jacobian,
+            vec const& mismatches,
             vec& dx,
             size_t numLoads,
             size_t numGenerators)
     {
-        jacobian(J2, dV, dD, numLoads, numGenerators);
-
-        vec a = F;
-        vec b = J * (dx);
+        vec a = mismatches;
+        vec b = jacobian * (dx);
         vec c(dx.size());
-        assert(c.size() == 2*numLoads + numGenerators);
+        assert(static_cast<size_t>(c.size()) == 2*numLoads + numGenerators);
         assert(dx.size() == b.size());
 
         for (vec::Index i = 0; i < dx.size(); i++) {
@@ -496,11 +491,9 @@ namespace fPotencia {
 
             get_increments(X, incV, incD, npq, npv);
 
-            auto mu_ = mu(J, J2, K, incV, incD, X, npq, npv);
+            // Update solution, use optimization factor µ:
 
-            //upgrade the solution
-            update_solution(X * mu_, npq, npv);
-
+            update_solution(X * mu(J, K, X, npq, npv), npq, npv);
 
             //Calculate the delta P/delta Q values:
 

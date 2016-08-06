@@ -111,11 +111,8 @@ namespace fPotencia {
 
         //! \brief Compute the acceleration factor
         double mu(
-                mat const& J,
-                mat &J2,
-                vec const& F,
-                vec &dV,
-                vec &dD,
+                mat const& jacobian,
+                vec const& mismatches,
                 vec& dx,
                 size_t numLoads,
                 size_t numGenerators);
