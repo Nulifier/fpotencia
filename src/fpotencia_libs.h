@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   fpotencia_libs.h
  * Author: Santiago Peñate Vera
  *
@@ -38,11 +38,10 @@
 #include <cmath>
 
 //Aseritions library
-#include <assert.h> 
+#include <assert.h>
 
+#include "Types.h"
 #include "enumaratons.h"
-
-typedef std::complex<double> cx_double;
 
 typedef Eigen::MatrixXd mat;
 typedef Eigen::VectorXd vec;
