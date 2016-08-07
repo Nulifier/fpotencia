@@ -1,8 +1,7 @@
-/* 
- * File:   Line.h
- * Author: Santiago Peñate Vera
+/*!
+ * \file
+ * \author Santiago Peñate Vera
  *
- * Created on 6 de agosto de 2014, 10:05
  * Copyright (C) 2014 Santiago Peñate Vera
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -10,43 +9,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "Solution.h"
-#include "fpotencia_libs.h"
 
-//using namespace arma;
-using namespace std;
-
-namespace fPotencia {
 #ifndef LINE_H
 #define	LINE_H
 
-    /*******************************************************************************
-     *LineType class definition
-     ******************************************************************************/
-    class LineType {
-    public:
-        LineType(string name, double r, double x, double b, bool per_unit_values);
 
-        virtual ~LineType();
+#include "LineType.h"
+#include "Solution.h"
+#include "fpotencia_libs.h"
 
-        //properties
-        string Name;
 
-        cx_double impedance;
+using namespace std;
 
-        cx_double shunt_admittance;
+namespace fPotencia {
 
-        bool values_in_per_unit = false;
 
-    private:
-
-        cx_mat Y;
-
-    };
-
-    /*******************************************************************************
-     *Line class definition
-     ******************************************************************************/
+    /*!
+     * \brief The Line class represents an actual power line
+     */
     class Line {
     public:
         Line(string name, int connection_bus1, int connection_bus2, LineType line_type, double line_lenght);
@@ -130,7 +110,7 @@ namespace fPotencia {
         Line3(string name, int connection_bus1, int connection_bus2, LineType3 line_type, double line_lenght);
 
         virtual~Line3();
-        
+
         void SetType(LineType3 &line_type);
 
         //properties
@@ -144,16 +124,15 @@ namespace fPotencia {
 
 
     private:
-        
+
         cx_mat3 A;
         cx_mat3 B;
-        
+
         cx_mat3 a;
         cx_mat3 b;
         cx_mat3 c;
         cx_mat3 d;
     };
+}
 
 #endif	/* LINE_H */
-
-}

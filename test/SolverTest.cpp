@@ -61,10 +61,27 @@ fPotencia::Circuit SolverTest::generateIeee14Bus() const
 
     // Line Types and Lines:
 
-    LineType ltype1("line type 1", 0.05, 0.11, 0.02, true);
-    LineType ltype2("line type 2", 0.03, 0.08, 0.02, true);
-    LineType ltype3("line type 3", 0.04, 0.09, 0.02, true);
-    LineType ltype4("line type 4", 0.06, 0.13, 0.03, true);
+    LineType ltype1, ltype2, ltype3, ltype4;
+    ltype1
+            .resistance(0.05)
+            .reactance(0.11)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype2
+            .resistance(0.03)
+            .reactance(0.08)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype3
+            .resistance(0.04)
+            .reactance(0.09)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype4
+            .resistance(0.06)
+            .reactance(0.13)
+            .susceptance(0.03)
+            .valueType(fPotencia::pu);
 
     Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
     Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);
@@ -290,10 +307,27 @@ Circuit SolverTest::generateLynnPowellWithGenerator() const
 
     // Line types and lines:
 
-    LineType ltype1("line type 1", 0.05, 0.11, 0.02, true);
-    LineType ltype2("line type 2", 0.03, 0.08, 0.02, true);
-    LineType ltype3("line type 3", 0.04, 0.09, 0.02, true);
-    LineType ltype4("line type 4", 0.06, 0.13, 0.03, true);
+    LineType ltype1, ltype2, ltype3, ltype4;
+    ltype1
+            .resistance(0.05)
+            .reactance(0.11)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype2
+            .resistance(0.03)
+            .reactance(0.08)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype3
+            .resistance(0.04)
+            .reactance(0.09)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype4
+            .resistance(0.06)
+            .reactance(0.13)
+            .susceptance(0.03)
+            .valueType(fPotencia::pu);
 
     Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
     Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);
@@ -367,10 +401,27 @@ fPotencia::Circuit SolverTest::generateLynnPowellWithoutGenerator() const
 
     // Line types and lines:
 
-    LineType ltype1("line type 1", 0.05, 0.11, 0.02, true);
-    LineType ltype2("line type 2", 0.03, 0.08, 0.02, true);
-    LineType ltype3("line type 3", 0.04, 0.09, 0.02, true);
-    LineType ltype4("line type 4", 0.06, 0.13, 0.03, true);
+    LineType ltype1, ltype2, ltype3, ltype4;
+    ltype1
+            .resistance(0.05)
+            .reactance(0.11)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype2
+            .resistance(0.03)
+            .reactance(0.08)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype3
+            .resistance(0.04)
+            .reactance(0.09)
+            .susceptance(0.02)
+            .valueType(fPotencia::pu);
+    ltype4
+            .resistance(0.06)
+            .reactance(0.13)
+            .susceptance(0.03)
+            .valueType(fPotencia::pu);
 
     Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
     Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);

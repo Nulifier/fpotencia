@@ -1,52 +1,7 @@
-/* 
- * File:   Line.cpp
- * Author: Santiago Peñate Vera
- * 
- * Created on 6 de agosto de 2014, 10:05
- * Copyright (C) 2014 Santiago Peñate Vera
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
+#include "LineType.h"
 #include "Line.h"
 
 namespace fPotencia {
-
-    /*******************************************************************************
-     LineType class implementation
-     ******************************************************************************/
-
-    /*
-     * Line type object constructor
-     */
-    LineType::LineType(string name, double r, double x, double b, bool per_unit_values) {
-        Name = name;
-
-        if (b == 0)
-            b = 1e-9;
-
-        impedance = cx_double(r, x);
-        shunt_admittance = cx_double(0.0, b);
-        values_in_per_unit = per_unit_values;
-
-        //cout << Name << ": per unit: " << values_in_per_unit << endl;
-    }
-
-    /*
-     * Line typeobject destructor
-     */
-    LineType::~LineType() {
-    }
-
-    /*******************************************************************************
-     *Line class implementation
-     ******************************************************************************/
-
-    /*
-     * Line object constructor
-     */
     Line::Line(string name, int connection_bus1, int connection_bus2, LineType line_type, double line_lenght) {
         Name = name;
         bus1 = connection_bus1;
@@ -71,9 +26,9 @@ namespace fPotencia {
      * model
      */
     void Line::SetType(LineType line_type) {
-        shunt_admittance = line_type.shunt_admittance * lenght;
-        impedance = line_type.impedance*lenght;
-        values_in_per_unit = line_type.values_in_per_unit;
+        shunt_admittance = line_type.shuntAdmittance() * lenght;
+        impedance = line_type.impedance() * lenght;
+        values_in_per_unit = (line_type.valueType() == fPotencia::pu);
 
         //create the element admittance matrix
         cx_double y = cx_double(1, 0) / impedance;
