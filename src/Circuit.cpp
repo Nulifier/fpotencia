@@ -76,7 +76,7 @@ namespace fPotencia {
      * branc elements Y_element matrices created as sparse matrices.
      */
     void Circuit::compose_Y() {
-        int n = Circuit::buses.size();
+        auto n = Circuit::buses.size();
 
         if (n > 0) {
             Y = sp_cx_mat(n, n);
@@ -91,13 +91,15 @@ namespace fPotencia {
             //Add the Lines admittances
             for (uint i = 0; i < lines.size(); i++) {
                 //if the line values are not in per units, then make them per unit
-                if (lines[i].values_in_per_unit == false) {
+                if (lines[i].valueType() == fPotencia::absolute) {
                     //do the per unit base change
-                    vbase = buses[lines[i].bus1].nominal_voltage;
-                    lines[i].Zbase = (vbase * vbase) / Sbase;
+                    vbase = buses[lines[i].buses().first].nominal_voltage;
+                    lines[i].impedanceBase_ = (vbase * vbase) / Sbase;
                 }
 
-                lines[i].get_element_Y(n, Y);
+                assert(n > lines[i].buses().first);
+                assert(n > lines[i].buses().second);
+                lines[i].placeAdmittance(Y);
             }
 
             //Add the transforers admittance matrices.
@@ -473,7 +475,7 @@ namespace fPotencia {
     void Circuit::calculate_flows(cx_solution sol_) {
 
         for (uint i = 0; i < lines.size(); i++) {
-            lines[i].calculate_current(sol_);
+            lines[i].setPower(sol_);
         }
 
         for (uint i = 0; i < transformers.size(); i++) {
@@ -542,9 +544,6 @@ namespace fPotencia {
     void Circuit::print() {
 
         cout << "Sbase = " << Sbase << endl;
-
-        for (uint i = 0; i < lines.size(); i++)
-            lines[i].print();
 
         for (uint i = 0; i < transformers.size(); i++)
             transformers[i].print();

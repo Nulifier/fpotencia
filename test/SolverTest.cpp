@@ -83,13 +83,28 @@ fPotencia::Circuit SolverTest::generateIeee14Bus() const
             .susceptance(0.03)
             .valueType(fPotencia::pu);
 
-    Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
-    Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);
-    Line l3("Line 1-5", b1.index, b5.index, ltype2, 1.0);
-    Line l4("Line 2-3", b2.index, b3.index, ltype3, 1.0);
-    Line l5("Line 2-5", b2.index, b5.index, ltype3, 1.0);
-    Line l6("Line 3-4", b3.index, b4.index, ltype4, 1.0);
-    Line l7("Line 4-5", b4.index, b5.index, ltype3, 1.0);
+    Line l1, l2, l3, l4, l5, l6, l7;
+    l1.buses(b1.index, b2.index)
+            .lineType(ltype1)
+            .length(1.0);
+    l2.buses(b1.index, b3.index)
+            .lineType(ltype2)
+            .length(1.0);
+    l3.buses(b1.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l4.buses(b2.index, b3.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l5.buses(b2.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l6.buses(b3.index, b4.index)
+            .lineType(ltype4)
+            .length(1.0);
+    l7.buses(b4.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
 
     model.lines.push_back(l1);
     model.lines.push_back(l2);
@@ -329,13 +344,35 @@ Circuit SolverTest::generateLynnPowellWithGenerator() const
             .susceptance(0.03)
             .valueType(fPotencia::pu);
 
-    Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
-    Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);
-    Line l3("Line 1-5", b1.index, b5.index, ltype2, 1.0);
-    Line l4("Line 2-3", b2.index, b3.index, ltype3, 1.0);
-    Line l5("Line 2-5", b2.index, b5.index, ltype3, 1.0);
-    Line l6("Line 3-4", b3.index, b4.index, ltype4, 1.0);
-    Line l7("Line 4-5", b4.index, b5.index, ltype3, 1.0);
+    Line l1, l2, l3, l4, l5, l6, l7;
+    l1
+            .buses(b1.index, b2.index)
+            .lineType(ltype1)
+            .length(1.0);
+    l2
+            .buses(b1.index, b3.index)
+            .lineType(ltype1)
+            .length(1.0);
+    l3
+            .buses(b1.index, b5.index)
+            .lineType(ltype2)
+            .length(1.0);
+    l4
+            .buses(b2.index, b3.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l5
+            .buses(b2.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l6
+            .buses(b3.index, b4.index)
+            .lineType(ltype4)
+            .length(1.0);
+    l7
+            .buses(b4.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
     model.lines.push_back(l1);
     model.lines.push_back(l2);
     model.lines.push_back(l3);
@@ -423,14 +460,35 @@ fPotencia::Circuit SolverTest::generateLynnPowellWithoutGenerator() const
             .susceptance(0.03)
             .valueType(fPotencia::pu);
 
-    Line l1("Line 1-2", b1.index, b2.index, ltype1, 1.0);
-    Line l2("Line 1-3", b1.index, b3.index, ltype1, 1.0);
-    Line l3("Line 1-5", b1.index, b5.index, ltype2, 1.0);
-    Line l4("Line 2-3", b2.index, b3.index, ltype3, 1.0);
-    Line l5("Line 2-5", b2.index, b5.index, ltype3, 1.0);
-    Line l6("Line 3-4", b3.index, b4.index, ltype4, 1.0);
-    Line l7("Line 4-5", b4.index, b5.index, ltype3, 1.0);
-    model.lines.push_back(l1);
+    Line l1, l2, l3, l4, l5, l6, l7;
+    l1
+            .buses(b1.index, b2.index)
+            .lineType(ltype1)
+            .length(1.0);
+    l2
+            .buses(b1.index, b3.index)
+            .lineType(ltype1)
+            .length(1.0);
+    l3
+            .buses(b1.index, b5.index)
+            .lineType(ltype2)
+            .length(1.0);
+    l4
+            .buses(b2.index, b3.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l5
+            .buses(b2.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);
+    l6
+            .buses(b3.index, b4.index)
+            .lineType(ltype4)
+            .length(1.0);
+    l7
+            .buses(b4.index, b5.index)
+            .lineType(ltype3)
+            .length(1.0);    model.lines.push_back(l1);
     model.lines.push_back(l2);
     model.lines.push_back(l3);
     model.lines.push_back(l4);
