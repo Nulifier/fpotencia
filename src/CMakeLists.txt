@@ -51,25 +51,25 @@ set(fpotencia_UNSUPPORTED_SOLVERS_SOURCES
     Solver_ZBusGS.cpp
     Solver_NRrect.cpp)
 
-
 if(BUILD_UNSUPPORTED_SOLVERS)
     list(APPEND ${fpotencia_SOURCES} ${fpotencia_UNSUPPORTED_SOLVERS_SOURCES})
 endif()
 
-
-include_directories(${eigen3_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-
 add_library(fpotencia ${fpotencia_SOURCES})
 
-target_link_libraries(fpotencia
-    Boost::graph
-    Eigen3::Eigen
+target_include_directories(fpotencia
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_link_libraries(fpotencia
+    PUBLIC
+        Boost::graph
+        Eigen3::Eigen
+)
 
 set_property(TARGET fpotencia PROPERTY CXX_STANDARD 17)
 set_property(TARGET fpotencia PROPERTY SOVERSION ${VERSION})
-
 
 install(TARGETS fpotencia
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
