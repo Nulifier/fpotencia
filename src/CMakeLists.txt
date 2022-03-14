@@ -62,10 +62,12 @@ include_directories(${eigen3_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 add_library(fpotencia ${fpotencia_SOURCES})
 
 target_link_libraries(fpotencia
-    Boost::graph)
+    Boost::graph
+    Eigen3::Eigen
+)
 
 
-set_property(TARGET fpotencia PROPERTY CXX_STANDARD 11)
+set_property(TARGET fpotencia PROPERTY CXX_STANDARD 17)
 set_property(TARGET fpotencia PROPERTY SOVERSION ${VERSION})
 
 

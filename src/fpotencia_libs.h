@@ -21,10 +21,10 @@
 #include <ctime>
 
 //EIGEN
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Sparse>
-#include <eigen3/Eigen/LU>
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <Eigen/LU>
 
 
 //BOOST: graphs

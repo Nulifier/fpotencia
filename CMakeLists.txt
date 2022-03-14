@@ -3,13 +3,13 @@ project(fPotencia VERSION 0.8 LANGUAGES CXX)
 
 
 include(FindDoxygen)
-include(FindPkgConfig)
+#include(FindPkgConfig)
 include(GNUInstallDirs)
 
 
 find_package(GTest)
-find_package(Boost REQUIRED COMPONENTS graph)
-pkg_check_modules(eigen3 REQUIRED eigen3>=3.2.8)
+#find_package(Boost REQUIRED COMPONENTS graph)
+#pkg_check_modules(eigen3 REQUIRED eigen3>=3.2.8)
 
 
 option(BUILD_UNSUPPORTED_SOLVERS
