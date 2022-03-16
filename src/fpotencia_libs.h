@@ -28,10 +28,10 @@
 
 
 //BOOST: graphs
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/breadth_first_search.hpp>
-#include <boost/pending/indirect_cmp.hpp>
-#include <boost/range/irange.hpp>
+//#include <boost/graph/adjacency_list.hpp>
+//#include <boost/graph/breadth_first_search.hpp>
+//#include <boost/pending/indirect_cmp.hpp>
+//#include <boost/range/irange.hpp>
 
 //General math
 #include <complex>

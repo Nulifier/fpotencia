@@ -154,6 +154,6 @@ namespace fPotencia {
         
     };
 
-#endif	/* SOLVER_NRPOLAR_H */
-
 }
+
+#endif	/* SOLVER_NRPOLAR_H */
