@@ -9,33 +9,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-//#include "armadillo"
+#pragma once
+
 #include "fpotencia_libs.h"
 
-//using namespace arma;
-using namespace std;
-
 namespace fPotencia {
-
-#ifndef EXTERNALGRID_H
-#define	EXTERNALGRID_H
-
-	class ExternalGrid {
+	class ExternalGrid final {
 		public:
-		ExternalGrid(string name, int connection_bus);
-		virtual ~ExternalGrid();
+		ExternalGrid(std::string name, int connection_bus);
 
-		/*Properties*/
-		string Name;
+		std::string Name;
 
+		/** The bus where this ExternalGrid is connected */
 		int bus;
 
+		/** The calculated power at this node */
 		cx_double power;
-
-		private:
-
 	};
-
-#endif	/* EXTERNALGRID_H */
-
 }

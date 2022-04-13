@@ -9,27 +9,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
 #include "fpotencia_libs.h"
 
-using namespace std;
-
 namespace fPotencia {
-#ifndef GENERATOR_H
-#define	GENERATOR_H
-
 	class Generator {
 		public:
-		Generator(string name, uint connection_bus, double P, double Q);
+		Generator(std::string name, uint connection_bus, double P, double Q);
 
-		Generator(string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit);
+		Generator(std::string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit);
 
-		virtual ~Generator();
+		std::string Name;
 
-
-		/*Properties*/
-		string Name;
-
+		/** The bus this generator is connected to */
 		uint bus;
 
 		cx_double power = cx_double(0.0, 0.0);
@@ -41,13 +34,7 @@ namespace fPotencia {
 		double voltage_set_point;
 
 		bool voltage_controlled = false;
-                
-                bool Vset_in_per_unit = false;
 
-		private:
-
+	   bool Vset_in_per_unit = false;
 	};
-
-#endif	/* GENERATOR_H */
-
 }

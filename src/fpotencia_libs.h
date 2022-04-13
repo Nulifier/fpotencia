@@ -10,14 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- Linux:
- * To satisfy the dependencies right away in Ubuntu (or other linux distro)
- * install:
- *  - libboost-graph-parallel-dev
- *  - libeigen3-dev
- */
-#include<iostream>
+#include <iostream>
 #include <ctime>
 
 //EIGEN
@@ -26,16 +19,10 @@
 #include <Eigen/Sparse>
 #include <Eigen/LU>
 
-
-//BOOST: graphs
-//#include <boost/graph/adjacency_list.hpp>
-//#include <boost/graph/breadth_first_search.hpp>
-//#include <boost/pending/indirect_cmp.hpp>
-//#include <boost/range/irange.hpp>
-
 //General math
 #include <complex>
 #include <cmath>
+#include <numbers>
 
 //Aseritions library
 #include <assert.h> 

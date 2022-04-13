@@ -9,10 +9,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-#ifndef SOLVER_NRPOLAR_H
-#define	SOLVER_NRPOLAR_H
-
+#pragma once
 
 #include <cmath>
 
@@ -20,140 +17,133 @@
 #include "Circuit.h"
 #include "Solution.h"
 
-
-using namespace std;
-
-
 namespace fPotencia {
 
-    /*!
-     * \brief This class implements the Nerwton-Raphson method of load flow
-     *  analysis using polar coordinates.
-     */
-    class NRpolarSolver: public Solver
-    {
-    public:
+	/*!
+	 * \brief This class implements the Newton-Raphson method of load flow
+	 *  analysis using polar coordinates.
+	 */
+	class NRpolarSolver: public Solver
+	{
+	public:
 
 
-        /*!
-         * \brief Creates a new solver
-         *
-         * \param[in] model The circuit the solver should perform load flow
-         *  analysis on
-         */
-        NRpolarSolver(Circuit const& model);
+		/*!
+		 * \brief Creates a new solver
+		 *
+		 * \param[in] model The circuit the solver should perform load flow
+		 *  analysis on
+		 */
+		NRpolarSolver(Circuit const& model);
 
 
-        /*!
-         * \brief Constructs a new solver instance that works off an initial
-         *  solution
-         *
-         * \param[in] model The circuit the solver should perform load flow
-         *  analysis on
-         *
-         * \param[in] sol_ The initial solution the solver should start
-         *  working with
-         */
-        NRpolarSolver(Circuit const& model, solution const& sol_);
+		/*!
+		 * \brief Constructs a new solver instance that works off an initial
+		 *  solution
+		 *
+		 * \param[in] model The circuit the solver should perform load flow
+		 *  analysis on
+		 *
+		 * \param[in] sol_ The initial solution the solver should start
+		 *  working with
+		 */
+		NRpolarSolver(Circuit const& model, solution const& sol_);
 
 
-        virtual ~NRpolarSolver() noexcept;
+		virtual ~NRpolarSolver() noexcept;
 
 
-        //!  \brief The circuit model the solver analyses
-        Circuit Model;
+		//!  \brief The circuit model the solver analyses
+		Circuit Model;
 
 
-        /*!
-         * \brief Allowable tolerance of the solver instance
-         *
-         * \sa DEFAULT_SOLUTION_TOLERANCE
-         */
-        double tolerance;
+		/*!
+		 * \brief Allowable tolerance of the solver instance
+		 *
+		 * \sa DEFAULT_SOLUTION_TOLERANCE
+		 */
+		double tolerance;
 
 
-        /*!
-         * \brief Maximum number of iterations
-         *
-         * \sa DEFAULT_MAX_ITERATIONS
-         */
-        unsigned maxIterations;
+		/*!
+		 * \brief Maximum number of iterations
+		 *
+		 * \sa DEFAULT_MAX_ITERATIONS
+		 */
+		unsigned maxIterations;
 
 
-        /*!
-         * \brief Solves a polynomial of 3rd degree
-         *
-         * This method solves a polynomial defined by the coeffients
-         * g0, g1, g3 and g3 such that $d + c*x + b*x^2 + a*x^3 = 0$.
-         *
-         * Provides the real solution using the Newton-Raphson technique
-         */
-        double solve3rdDegreePolynomial(
-                double d,
-                double c,
-                double b,
-                double a,
-                double x) const;
+		/*!
+		 * \brief Solves a polynomial of 3rd degree
+		 *
+		 * This method solves a polynomial defined by the coeffients
+		 * g0, g1, g3 and g3 such that $d + c*x + b*x^2 + a*x^3 = 0$.
+		 *
+		 * Provides the real solution using the Newton-Raphson technique
+		 */
+		double solve3rdDegreePolynomial(
+				double d,
+				double c,
+				double b,
+				double a,
+				double x) const;
 
 
-        //! \brief Checks whether a particular solution converged
-        bool converged(vec const& PQinc, uint npqpvpq) const;
+		//! \brief Checks whether a particular solution converged
+		bool converged(vec const& PQinc, uint npqpvpq) const;
 
 
-        /*!
-         * \brief Solves the grid
-         *
-         * \return Solver_State::converged if the grid was solved
-         *
-         * \sa Solver_State
-         */
-        virtual Solver::Result powerFlow(Circuit& grid) override;
+		/*!
+		 * \brief Solves the grid
+		 *
+		 * \return Solver_State::converged if the grid was solved
+		 *
+		 * \sa Solver_State
+		 */
+		virtual Solver::Result powerFlow(Circuit& grid) override;
 
 
-        void update_solution_power_from_circuit();
-        
-    private:
+		void update_solution_power_from_circuit();
+		
+	private:
 
-        vector<int> BUSES;
+		std::vector<int> BUSES;
 
-        vector<int> PQPV;
+		std::vector<int> PQPV;
 
-        vector<int> LastPQ;
-        
-        vector<int> LastPV;
+		std::vector<int> LastPQ;
+		
+		std::vector<int> LastPV;
 
-        vec Pesp;
+		vec Pesp;
 
-        vec Qesp;
+		vec Qesp;
 
-        solution Sol;
+		solution Sol;
 
-        void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv); //calculate the jacobian, J is passed by refference
-        
-        double mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
-        void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
+		void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv); //calculate the jacobian, J is passed by refference
+		
+		double mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
+		void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
 
-        void calculate_Q(uint npq, uint npv); //calculate the reative power at the PV buses
+		void calculate_Q(uint npq, uint npv); //calculate the reative power at the PV buses
 
-        double Q(uint k);
+		double Q(uint k);
 
-        double P(uint k);
+		double P(uint k);
 
-        void update_solution(vec X, uint npq, uint npv);
-        
-        void get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv);
+		void update_solution(vec X, uint npq, uint npv);
+		
+		void get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv);
 
-        void calculate_slack_power(); //calculate the slack bus power        
-
-
-        //! \brief Checks whether the solver can work on the given model
-        bool checks() const;
+		void calculate_slack_power(); //calculate the slack bus power        
 
 
-        void correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X);
-        
-    };
+		//! \brief Checks whether the solver can work on the given model
+		bool checks() const;
 
+
+		void correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X);
+		
+	};
 }
-
-#endif	/* SOLVER_NRPOLAR_H */

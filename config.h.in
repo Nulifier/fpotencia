@@ -1,9 +1,4 @@
-#ifndef CONFIG_H_IN
-#define CONFIG_H_IN
-
+#pragma once
 
 //! \brief Build Load Flow solvers currently unstable or failing tests
 #cmakedefine BUILD_UNSUPPORTED_SOLVERS
-
-
-#endif // CONFIG_H_IN

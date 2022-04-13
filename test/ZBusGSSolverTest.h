@@ -1,14 +1,8 @@
-#ifndef ZBUSGSSOLVERTEST_H
-#define ZBUSGSSOLVERTEST_H
-
+#pragma once
 
 #include "SolverTest.h"
 
-
-class ZBusGSSolverTest: public SolverTest
-{
+class ZBusGSSolverTest: public SolverTest {
 public:
-    virtual ~ZBusGSSolverTest() noexcept {}
+	virtual ~ZBusGSSolverTest() noexcept {}
 };
-
-#endif // ZBUSGSSOLVERTEST_H

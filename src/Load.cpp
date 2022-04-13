@@ -13,20 +13,9 @@
 #include "Load.h"
 
 namespace fPotencia {
-
-    /*
-     * Load object constructor
-     */
-    Load::Load(string name, int connection_bus, double P, double Q) {
-        Name = name;
-        bus = connection_bus;
-        power = cx_double(P, Q);
-    }
-
-    /*
-     * Load object destructor
-     */
-    Load::~Load() {
-    }
-
+	Load::Load(std::string name, int connection_bus, double P, double Q) {
+		Name = name;
+		bus = connection_bus;
+		power = cx_double(P, Q);
+	}
 }

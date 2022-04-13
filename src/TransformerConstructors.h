@@ -9,13 +9,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
 #include "Solution.h"
 #include "fpotencia_libs.h"
-
-using namespace std;
-
-
 
 /*
  * This file contains the neccesary classes to model 3-phase overhead lines
@@ -32,93 +29,84 @@ using namespace std;
  */
 
 namespace fPotencia {
-#ifndef TRANSFORMER_C
-#define	TRANSFORMER_C
+	/*
+	 * 
+	 */
+	class Transformer_3phase_Yabc {
+	public:
+		Transformer_3phase_Yabc();
 
-    /*
-     * 
-     */
-    class Transformer_3phase_Yabc {
-    public:
-        Transformer_3phase_Yabc();
+		virtual ~Transformer_3phase_Yabc();
 
-        virtual ~Transformer_3phase_Yabc();
+		cx_mat Yabc(cx_double leakage_impedance,
+				TransformerConnexionType connexionType,
+				double tap_hv,
+				double tap_lv);
+	};
 
-        cx_mat Yabc(cx_double leakage_impedance,
-                TransformerConnexionType connexionType,
-                double tap_hv,
-                double tap_lv);
-    };
-
-    /* 
-     * Computes the transformer parameters from its short circuit test values
-     */
-    class Transformer_ShortCircuit_Constructor {
-    public:
+	/* 
+	 * Computes the transformer parameters from its short circuit test values
+	 */
+	class Transformer_ShortCircuit_Constructor {
+	public:
 
 
-        Transformer_ShortCircuit_Constructor(string name,
-                TransformerConnexionType connexionType,
-                double HV_nominal_voltage,
-                double LV_nominal_voltage, double Nominal_power,
-                double Copper_losses, double Iron_losses,
-                double No_load_current, double Short_circuit_voltage,
-                double GX_HV1,
-                double GR_HV1);
+		Transformer_ShortCircuit_Constructor(std::string name,
+				TransformerConnexionType connexionType,
+				double HV_nominal_voltage,
+				double LV_nominal_voltage, double Nominal_power,
+				double Copper_losses, double Iron_losses,
+				double No_load_current, double Short_circuit_voltage,
+				double GX_HV1,
+				double GR_HV1);
 
-        /**/
-        virtual~Transformer_ShortCircuit_Constructor();
+		/**/
+		virtual~Transformer_ShortCircuit_Constructor();
 
-        cx_mat Y_abc; //Calculates admittance matrix from the constructor
+		cx_mat Y_abc; //Calculates admittance matrix from the constructor
 
-        //Calculated parameters in per unit values
-        cx_double leakage_impedance; //r + j*x
+		//Calculated parameters in per unit values
+		cx_double leakage_impedance; //r + j*x
 
-        cx_double magnetizing_impedance; //rfe + j*xm   
+		cx_double magnetizing_impedance; //rfe + j*xm   
 
-        // Tap angle phase shift [rad]    
-        double phase_shift = PI / 6.0;
-        
-    private:
+		// Tap angle phase shift [rad]    
+		double phase_shift = PI / 6.0;
+		
+	private:
 
-        void calculate_model();
+		void calculate_model();
 
-        // Type name    
-        string Name;
+		// Type name    
+		std::string Name;
 
-        // HV side nominal voltage [kV]    
-        double Uhv;
+		// HV side nominal voltage [kV]    
+		double Uhv;
 
-        // LV side nominal voltage [kV]    
-        double Ulv;
+		// LV side nominal voltage [kV]    
+		double Ulv;
 
-        // Nominal power [MVA]    
-        double Sn;
+		// Nominal power [MVA]    
+		double Sn;
 
-        // Copper losses [kW]    
-        double Pcu;
+		// Copper losses [kW]    
+		double Pcu;
 
-        // Iron losses [kW]    
-        double Pfe;
+		// Iron losses [kW]    
+		double Pfe;
 
-        // No load current [%]    
-        double I0;
+		// No load current [%]    
+		double I0;
 
-        // Short circuit voltage [%]    
-        double Usc;
+		// Short circuit voltage [%]    
+		double Usc;
 
-        // Reactance contribution to the HV side [from 0 to 1]    
-        double GX_hv1;
+		// Reactance contribution to the HV side [from 0 to 1]    
+		double GX_hv1;
 
-        // Resistance contribution to the HV side [from 0 to 1]    
-        double GR_hv1;
+		// Resistance contribution to the HV side [from 0 to 1]    
+		double GR_hv1;
 
-        TransformerConnexionType connType;
-    };
-
-
-
-
-
-#endif
+		TransformerConnexionType connType;
+	};
 }

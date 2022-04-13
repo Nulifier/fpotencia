@@ -1,13 +1,10 @@
-
 /* 
  * File:   fpotencia.h
  * Author: spv86_000
  *
  * Created on 31 de enero de 2015, 15:22
  */
-
-#ifndef FPOTENCIA_H
-#define	FPOTENCIA_H
+#pragma once
 
 /*Circuits*/
 #include "Circuit.h"
@@ -25,12 +22,9 @@
 #include "TransformerConstructors.h"
 
 /*Circuit solvers*/
-#include "Solver_ZBusGS.h"
+//#include "Solver_ZBusGS.h"
+//#include "Solver_NRrect.h"
+//#include "Solver_Jacobi.h"
 #include "Solver_NRpolar.h"
-#include "Solver_NRrect.h"
-#include "Solver_Jacobi.h"
 #include "Solver_NRcurrent.h"
-
 #include "CommonFunctions.h"
-
-#endif	/* FPOTENCIA_H */

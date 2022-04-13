@@ -3,7 +3,7 @@
 
 
 UnfittingSolverException::UnfittingSolverException(const char* what):
-        std::logic_error(what)
+	std::logic_error(what)
 {
 }
 

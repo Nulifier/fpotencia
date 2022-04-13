@@ -13,32 +13,16 @@
 #include "Bus.h"
 
 namespace fPotencia {
+	Bus::Bus(std::string name, BusType type, double Bus_Nominal_Voltage) {
+		Name = name;
+		Type = type;
+		nominal_voltage = Bus_Nominal_Voltage;
+	}
 
-    /*
-     * Bus class constructor
-     */
-    Bus::Bus(string name, const BusType& type, double Bus_Nominal_Voltage) {
-        Name = name;
-        Type = type;
-        nominal_voltage = Bus_Nominal_Voltage;
-        max_voltage = 1.05 * nominal_voltage;
-        min_voltage = 0.95 * nominal_voltage;
-    }
+	void Bus::print() {
+		std::cout << Name + " -> " + BusType_name[Type] << std::endl;
+		std::cout << "\tPower: " << power << std::endl;
 
-    /*
-     * Bus class destructor
-     */
-    Bus::~Bus() {
-    }
-
-    /*
-     * Print the bus results
-     */
-    void Bus::print() {
-        cout << Name + " -> " + BusType_name[Type] << endl;
-        cout << "\tPower: " << power << endl;
-
-        cout << "\tVoltage: " << voltage << "\tVoltage p.u.: " << voltage_pu << endl;
-    }
-
+		std::cout << "\tVoltage: " << voltage << "\tVoltage p.u.: " << voltage_pu << std::endl;
+	}
 }

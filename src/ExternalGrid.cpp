@@ -13,19 +13,11 @@
 #include "ExternalGrid.h"
 
 namespace fPotencia {
-
-    /*
-     * External grid object constructor
-     */
-    ExternalGrid::ExternalGrid(string name, int connection_bus) {
-        Name = name;
-        bus = connection_bus;
-    }
-
-    /*
-     * External grid object destructor
-     */
-    ExternalGrid::~ExternalGrid() {
-    }
-
+	/*
+	 * External grid object constructor
+	 */
+	ExternalGrid::ExternalGrid(std::string name, int connection_bus) {
+		Name = name;
+		bus = connection_bus;
+	}
 }

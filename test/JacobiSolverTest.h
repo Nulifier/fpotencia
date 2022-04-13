@@ -1,14 +1,8 @@
-#ifndef JACOBISOLVERTEST_H
-#define JACOBISOLVERTEST_H
-
+#pragma once
 
 #include "SolverTest.h"
 
-
-class JacobiSolverTest: public SolverTest
-{
+class JacobiSolverTest: public SolverTest {
 public:
-    virtual ~JacobiSolverTest() noexcept {}
+	virtual ~JacobiSolverTest() noexcept {}
 };
-
-#endif // JACOBISOLVERTEST_H

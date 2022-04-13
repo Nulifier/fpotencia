@@ -9,6 +9,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
 #define PI 3.1415926535897932384626433832795
 
@@ -22,70 +23,65 @@
 #define m2in 39.3700787
 #define km2mile 0.621371192
 
-
-#ifndef SOLVER_DEF_H
-#define SOLVER_DEF_H
-
 namespace fPotencia {
 
-    enum Solver_State {
-        Converged,
-        Not_Converged,
-        Not_Solvable,
-        Not_Solvable_with_Method
-    };
+	enum Solver_State {
+		Converged,
+		Not_Converged,
+		Not_Solvable,
+		Not_Solvable_with_Method
+	};
 
-    enum BusType {
-        PQ,
-        PV,
-        VD, //Same as slack 
-        undefined_bus_type
-    };
+	enum BusType {
+		PQ,
+		PV,
+		VD, //Same as slack 
+		undefined_bus_type
+	};
 
-    enum Cable_Type {
-        ConcentricNeutral,
-        TapeShield
-    };
+	enum Cable_Type {
+		ConcentricNeutral,
+		TapeShield
+	};
 
-    enum Conductor_Type {
-        Cable,
-        Tape_Shield,
-        Void
-    };
+	enum Conductor_Type {
+		Cable,
+		Tape_Shield,
+		Void
+	};
 
-    enum ConnectionPhase {
-        A,
-        B,
-        C
-    };
+	enum ConnectionPhase {
+		A,
+		B,
+		C
+	};
 
-    enum TransformerConnexionType {
-        Yg_Yg,
-        Yg_Y,
-        Yg_D,
-        Y_Yg,
-        Y_Y,
-        Y_D,
-        D_Yg,
-        D_Y,
-        D_D
-    };
+	enum TransformerConnexionType {
+		Yg_Yg,
+		Yg_Y,
+		Yg_D,
+		Y_Yg,
+		Y_Y,
+		Y_D,
+		D_Yg,
+		D_Y,
+		D_D
+	};
 
-    enum Initialization_Mode {
-        Positive_Sequence,
-        Three_Phase
-    };
-    
-    enum Units_mode{
-        US, //meaning a weird mix of metric and imperial, read where aplicable
-        Metric //metric system compatible m, km, etc.
-    };
+	enum Initialization_Mode {
+		Positive_Sequence,
+		Three_Phase
+	};
+	
+	enum Units_mode{
+		US, //meaning a weird mix of metric and imperial, read where aplicable
+		Metric //metric system compatible m, km, etc.
+	};
 
-    static const char * BusType_name[] = {
-        "PQ",
-        "PV",
-        "VD",
-        "undefined bus type"
-    };
+	static const char * BusType_name[] = {
+		"PQ",
+		"PV",
+		"VD",
+		"undefined bus type"
+	};
 }
-#endif /* SOLVER_DEF_H */

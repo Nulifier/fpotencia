@@ -9,23 +9,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
-//#include "armadillo"
 #include "fpotencia_libs.h"
 #include "Solution.h"
 
-//using namespace arma;
-using namespace std;
-
 namespace fPotencia {
-#ifndef SHUNT_H
-#define	SHUNT_H
-
-	class Shunt {
-		public:                
-                Shunt(string name, int bus, double R, double X);
-                
-		virtual ~Shunt();
+	class Shunt final {
+	public:                
+	    Shunt(std::string name, int bus, double R, double X);
 
 		void get_element_Y(int n, sp_cx_mat &Yret);
 
@@ -36,7 +28,7 @@ namespace fPotencia {
 		/*************************************************************************
 		 * Properties
 		 *************************************************************************/
-		string Name;
+		std::string Name;
 
 		int bus1 = 0;
 
@@ -61,7 +53,4 @@ namespace fPotencia {
 		cx_double Y_element;
 
 	};
-
-#endif	/* SHUNT_H */
-
 }

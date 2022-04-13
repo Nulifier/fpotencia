@@ -14,36 +14,29 @@
 
 namespace fPotencia {
 
-    /*
-     * Constructor for non voltage controlled generators
-     */
-    Generator::Generator(string name, uint connection_bus, double P, double Q) {
-        Name = name;
-        bus = connection_bus;
-        power = cx_double(P, Q);
-        Vset_in_per_unit = true;
-        voltage_set_point = 1.0;
-        voltage_controlled = false;
-    }
+	/*
+	 * Constructor for non voltage controlled generators
+	 */
+	Generator::Generator(std::string name, uint connection_bus, double P, double Q) {
+		Name = name;
+		bus = connection_bus;
+		power = cx_double(P, Q);
+		Vset_in_per_unit = true;
+		voltage_set_point = 1.0;
+		voltage_controlled = false;
+	}
 
-    /*
-     * Class constructor for voltage controlled generators
-     */
-    Generator::Generator(string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit) {
-        Name = name;
-        bus = connection_bus;
-        power = cx_double(P, 0.0);
-        voltage_set_point = Vset;
-        voltage_controlled = true;
-        min_Q = Qmin;
-        max_Q = Qmax;
-        Vset_in_per_unit = Vset_per_unit;
-    }
-
-    /*
-     * Generator object destructor
-     */
-    Generator::~Generator() {
-    }
-
+	/*
+	 * Class constructor for voltage controlled generators
+	 */
+	Generator::Generator(std::string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit) {
+		Name = name;
+		bus = connection_bus;
+		power = cx_double(P, 0.0);
+		voltage_set_point = Vset;
+		voltage_controlled = true;
+		min_Q = Qmin;
+		max_Q = Qmax;
+		Vset_in_per_unit = Vset_per_unit;
+	}
 }

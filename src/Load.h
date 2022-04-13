@@ -9,24 +9,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
-//#include "armadillo"
 #include "fpotencia_libs.h"
 
-//using namespace arma;
-using namespace std;
-
 namespace fPotencia {
-#ifndef LOAD_H
-#define	LOAD_H
+	class Load final {
+	public:
+		Load(std::string name, int connection_bus, double P, double Q);
 
-	class Load {
-		public:
-		Load(string name, int connection_bus, double P, double Q);
-		virtual ~Load();
-
-		/*Properties*/
-		string Name;
+		std::string Name;
 
 		int bus = -1;
 
@@ -36,7 +28,4 @@ namespace fPotencia {
 		private:
 
 	};
-
-#endif	/* LOAD_H */
-
 }

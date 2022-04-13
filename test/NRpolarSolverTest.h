@@ -1,14 +1,8 @@
-#ifndef NRPOLARSOLVERTEST_H
-#define NRPOLARSOLVERTEST_H
-
+#pragma once
 
 #include "SolverTest.h"
 
-
-class NRpolarSolverTest: public SolverTest
-{
+class NRpolarSolverTest: public SolverTest {
 public:
-    virtual ~NRpolarSolverTest() noexcept {}
+	virtual ~NRpolarSolverTest() noexcept {}
 };
-
-#endif // NRPOLARSOLVERTEST_H

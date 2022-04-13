@@ -1,14 +1,8 @@
-#ifndef NRCURRENTSOLVERTEST_H
-#define NRCURRENTSOLVERTEST_H
-
+#pragma once
 
 #include "SolverTest.h"
 
-
-class NRcurrentSolverTest: public SolverTest
-{
+class NRcurrentSolverTest: public SolverTest {
 public:
-    virtual ~NRcurrentSolverTest() noexcept {}
+	virtual ~NRcurrentSolverTest() noexcept {}
 };
-
-#endif // NRCURRENTSOLVERTEST_H
