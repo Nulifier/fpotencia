@@ -9,7 +9,6 @@ set(fpotencia_SOURCES
     Graph.cpp
     Solver_NRcurrent.cpp
     Shunt.cpp
-    Circuit3.cpp
     Load.cpp
     Line.cpp
     Bus.cpp
@@ -21,7 +20,6 @@ set(fpotencia_SOURCES
 set(fpotencia_HEADERS
     Solver.h
     UnfittingSolverException.h
-    Circuit3.h
     Circuit.h
     TransformerConstructors.h
     Shunt.h
