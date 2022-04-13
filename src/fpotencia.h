@@ -9,7 +9,6 @@
 #ifndef FPOTENCIA_H
 #define	FPOTENCIA_H
 
-
 /*Circuits*/
 #include "Circuit.h"
 
@@ -34,7 +33,4 @@
 
 #include "CommonFunctions.h"
 
-#include "Graph.h"
-
 #endif	/* FPOTENCIA_H */
-

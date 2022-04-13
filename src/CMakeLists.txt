@@ -6,7 +6,6 @@ set(fpotencia_SOURCES
     Circuit.cpp
     Generator.cpp
     TransformerConstructors.cpp
-    Graph.cpp
     Solver_NRcurrent.cpp
     Shunt.cpp
     Load.cpp
@@ -24,7 +23,6 @@ set(fpotencia_HEADERS
     TransformerConstructors.h
     Shunt.h
     Transformer.h
-    Graph.h
     Line.h
     enumaratons.h
     Load.h
