@@ -5,6 +5,12 @@
 image: mcr.microsoft.com/vscode/devcontainers/cpp
 
 tasks:
-  - command: |
+  - before: |
+      sudo apt update
+      sudo apt install -y \
+        libeigen3-dev \
+        catch2 \
+        doxygen
+    command: |
       mkdir -d build
       cmake -S . -B build
