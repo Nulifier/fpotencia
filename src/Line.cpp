@@ -13,15 +13,7 @@
 #include "Line.h"
 
 namespace fPotencia {
-
-	/*******************************************************************************
-	 LineType class implementation
-	 ******************************************************************************/
-
-	/*
-	 * Line type object constructor
-	 */
-	LineType::LineType(std::string name, double r, double x, double b, bool per_unit_values) {
+	LineType::LineType(const std::string& name, double r, double x, double b, bool per_unit_values) {
 		Name = name;
 
 		if (b == 0)
@@ -30,26 +22,15 @@ namespace fPotencia {
 		impedance = cx_double(r, x);
 		shunt_admittance = cx_double(0.0, b);
 		values_in_per_unit = per_unit_values;
-
-		//cout << Name << ": per unit: " << values_in_per_unit << endl;
 	}
 
-	/*******************************************************************************
-	 *Line class implementation
-	 ******************************************************************************/
-
-	/*
-	 * Line object constructor
-	 */
-	Line::Line(std::string name, int connection_bus1, int connection_bus2, LineType line_type, double line_lenght) {
+	Line::Line(const std::string& name, int connection_bus1, int connection_bus2, LineType line_type, double line_length) {
 		Name = name;
 		bus1 = connection_bus1;
 		bus2 = connection_bus2;
-		lenght = line_lenght;
+		length = line_length;
 
 		SetType(line_type);
-
-		//cout << Name << "[" << bus1 << ", " << bus2 << "]" << " -> [z:" << impedance << ", y:" << shunt_admittance << "]" << endl;
 	}
 
 	/*
@@ -57,8 +38,8 @@ namespace fPotencia {
 	 * model
 	 */
 	void Line::SetType(LineType line_type) {
-		shunt_admittance = line_type.shunt_admittance * lenght;
-		impedance = line_type.impedance*lenght;
+		shunt_admittance = line_type.shunt_admittance * length;
+		impedance = line_type.impedance * length;
 		values_in_per_unit = line_type.values_in_per_unit;
 
 		//create the element admittance matrix
@@ -80,26 +61,17 @@ namespace fPotencia {
 					std::stringstream ss;
 					ss << "Line>>" << Name << ": infinite or nan values in the element Y at: " << i << "," << j;
 					throw std::invalid_argument(ss.str());
-					//std::cout << "Line>>" << Name << ": infinite or nan values in the element Y at: " << i << "," << j << endl;
 				}
 	}
 
-	/*
-	 * Returns the component admittance matrix in sparse format, this way
-	 * the composition of the circuit admittance matrix is straight forward
-	 */
 	void Line::get_element_Y(int n, sp_cx_mat &Yret) {
-
 		//dimension check
 		if (bus1 > (n - 1) || bus2 > (n - 1)) {
 			std::stringstream ss;
 			ss << "Line>>" << Name << ": Wrong Y dimension: " << n;
 			throw std::invalid_argument(ss.str());
-			//std::cout << "Line>>" << Name << ": Wrong Y dimension: " << n << endl;
 			return;
 		}
-
-
 
 		//set the circuit matrix values
 		if (values_in_per_unit) {
@@ -115,10 +87,6 @@ namespace fPotencia {
 		}
 	}
 
-	/*
-	 * This function calculates the amount of current going through the line
-	 * given a circuit solution
-	 */
 	void Line::calculate_current(cx_solution sol) {
 		cx_mat voltage(2, 1);
 		cx_mat current(2, 1);
@@ -145,9 +113,6 @@ namespace fPotencia {
 				power_losses = power_bus2_to_bus1 - power_bus1_to_bus2;*/
 	}
 
-	/*
-	 * This function prints all the line calculated parameters
-	 */
 	void Line::print() {
 		std::cout << Name << std::endl;
 		std::cout << "\t r:" << impedance.real() << ", x:" << impedance.imag() << ", c: " << shunt_admittance.imag() << std::endl;

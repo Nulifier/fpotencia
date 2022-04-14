@@ -375,7 +375,7 @@ namespace fPotencia {
 		bool updating = false;
 
 		Iterations = 0;
-		while (!converged_ && Iterations < Max_Iter) {
+		while (!converged_ && Iterations < maxIterations) {
 
 			//prints
 			std::cout << "\n\nIter: " << Iterations << "\n" << std::endl;

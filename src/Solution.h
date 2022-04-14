@@ -11,7 +11,6 @@
  */
 #pragma once
 
-#include <iostream>
 #include "fpotencia_libs.h"
 
 namespace fPotencia {
@@ -19,25 +18,22 @@ namespace fPotencia {
 	 * This solution object with complex vectors is suited for methods like Jacobi
 	 * or Gauss-Seidel
 	 */
-	class cx_solution {
+	class cx_solution final {
 	public:
 		/*Properties*/
 		cx_vec S;
 
 		cx_vec V;
 
-		bool initialized;
+		bool initialized = false;
 
 		uint Lenght;
-
-		cx_solution();
-		virtual ~cx_solution();
 
 		void copy_from(cx_solution orig);
 
 		void resize(int n);
 
-		void print(std::string title);
+		void print(const std::string& title);
 
 		cx_vec getS();
 
@@ -65,7 +61,7 @@ namespace fPotencia {
 	 * This type of separated vectors solution is good for solvers of the
 	 * Newton-Raphson type.
 	 */
-	class solution {
+	class solution final {
 	public:
 		vec P;
 
@@ -75,12 +71,9 @@ namespace fPotencia {
 
 		vec D;
 
-		bool initialized;
+		bool initialized = false;
 
 		uint Lenght;
-
-		solution();
-		virtual ~solution();
 
 		void copy_from(solution orig);
 
@@ -88,7 +81,7 @@ namespace fPotencia {
 		
 		void clear();
 
-		void print(std::string title);
+		void print(const std::string& title);
 
 		double Vi(uint k);
 

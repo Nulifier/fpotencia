@@ -36,7 +36,7 @@ namespace fPotencia {
 		 *
 		 * \sa DEFAULT_SOLUTION_TOLERANCE
 		 */
-		double tolerance;
+		double tolerance = DEFAULT_SOLUTION_TOLERANCE;
 
 
 		/*!
@@ -44,15 +44,7 @@ namespace fPotencia {
 		 *
 		 * \sa DEFAULT_MAX_ITERATIONS
 		 */
-		unsigned maxIterations;
-
-
-		//! \brief Constructs a new solver object
-		explicit Solver();
-
-
-		virtual ~Solver() noexcept;
-
+		unsigned int maxIterations = DEFAULT_MAX_ITERATIONS;
 
 		/*!
 		 * \brief Calculates the power flow in the given circuit

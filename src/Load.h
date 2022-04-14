@@ -14,18 +14,17 @@
 #include "fpotencia_libs.h"
 
 namespace fPotencia {
+	/** A load connected to a bus */
 	class Load final {
 	public:
 		Load(std::string name, int connection_bus, double P, double Q);
 
 		std::string Name;
 
-		int bus = -1;
+		/** The bus this load is connected to */
+		int bus;
 
+		/* The power consumed by this load */
 		cx_double power;
-
-
-		private:
-
 	};
 }

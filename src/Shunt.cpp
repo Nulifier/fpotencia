@@ -13,10 +13,6 @@
 #include "Shunt.h"
 
 namespace fPotencia {
-
-	/*
-	 * Shunt object constructor
-	 */
 	Shunt::Shunt(std::string name, int bus, double R, double X) {
 		Name = name;
 		impedance = cx_double(R, X);

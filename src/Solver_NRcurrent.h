@@ -39,7 +39,7 @@ namespace fPotencia {
 
 		int Iterations = 0;
 
-		int Max_Iter = 2;
+		unsigned int maxIterations = 2;
 
 		Solver_State solve(); //Solves the grid
 

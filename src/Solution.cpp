@@ -10,6 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <iostream>
 #include <vector>
 
 #include "Solution.h"
@@ -22,19 +23,6 @@ namespace fPotencia {
 	 * form. This way of representation of the voltage is usefull for the Newton
 	 * -Raphson algorithm, in order to better represent the PV buses constraint
 	 **************************************************************************/
-
-	/*
-	 * solution object constructor
-	 */
-	solution::solution() {
-		initialized = false;
-	}
-
-	/*
-	 * soluton object destructor
-	 */
-	solution::~solution() {
-	}
 
 	/*
 	 * this function initializes this solution object as a copy of another
@@ -134,7 +122,7 @@ namespace fPotencia {
 	/*
 	 * This function prints the solution values
 	 */
-	void solution::print(std::string title) {
+	void solution::print(const std::string& title) {
 		std::cout << title << std::endl;
 		std::cout << "P\tQ\tV\tD" << std::endl;
 		for (uint i = 0; i < Lenght; i++) {
@@ -149,19 +137,6 @@ namespace fPotencia {
 	 * power in complex mode. This is the solution "shape" that suits best
 	 * algorithms like gauss-seidel
 	 **************************************************************************/
-
-	/*
-	 * cxsolution object constructor
-	 */
-	cx_solution::cx_solution() {
-		initialized = false;
-	}
-
-	/*
-	 * cx_solution object destructor
-	 */
-	cx_solution::~cx_solution() {
-	}
 
 	/*
 	 * this function initializes this cx_solution object as a copy of another
@@ -186,7 +161,7 @@ namespace fPotencia {
 	/*
 	 * This function prints the solution values
 	 */
-	void cx_solution::print(std::string title) {
+	void cx_solution::print(const std::string& title) {
 		std::cout << title << std::endl;
 		std::cout << "S\t\tV" << std::endl;
 		for (uint i = 0; i < Lenght; i++) {

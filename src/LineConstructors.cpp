@@ -101,12 +101,6 @@ namespace fPotencia {
 	 * Underground Cable
 	 ***************************************************************************/
 
-	UndergroundCable::UndergroundCable() {
-	}
-
-	UndergroundCable::~UndergroundCable() {
-	}
-
 	UndergroundCable::UndergroundCable(Conductor phase_conductor, Conductor neutral_conductor,
 			uint number_of_neutrals, double cable_diameter,
 			double relative_permitivity, Units_mode unit_mode) {

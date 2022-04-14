@@ -100,7 +100,7 @@ void power_flow_test() {
 
 	std::cout << "\n\n\n NR CURRENT \n\n " << std::endl;
 	Solver_NRcurrent NRcs(model);
-	NRcs.Max_Iter = 6;
+	NRcs.maxIterations = 6;
 	NRcs.EPS = 1e-9;
 	state = NRcs.solve();
 	if (state == Solver_State::Converged) {

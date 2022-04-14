@@ -106,13 +106,8 @@ namespace fPotencia {
 	/*
 	 * Cable containing distributed embeeded neutral   
 	 */
-	class UndergroundCable {
+	class UndergroundCable final {
 	public:
-
-		UndergroundCable();
-		virtual ~UndergroundCable();
-
-
 		/*
 		 * Concentric neutral cable
 		 * phase_conductor,
