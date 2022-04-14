@@ -29,6 +29,7 @@
 
 # CMake stuff:
 CMakeLists.txt.user
+build/
 
 # Editor files:
 *~

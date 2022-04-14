@@ -18,7 +18,6 @@ algorithms:
 
   - CMake >= 3.0.0
   - Eigen >= 3.2.8
-  - Boost.Graph >= 1.59.0
 
 Optionally, if you want testing:
 
