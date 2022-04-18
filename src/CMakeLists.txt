@@ -60,7 +60,6 @@ target_include_directories(fpotencia
 
 target_link_libraries(fpotencia
 	PUBLIC
-		#Boost::graph
 		Eigen3::Eigen
 )
 

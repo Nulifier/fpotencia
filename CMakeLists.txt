@@ -4,7 +4,9 @@ project(fPotencia VERSION 0.8 LANGUAGES CXX)
 include(FindDoxygen)
 include(GNUInstallDirs)
 
-find_package(Eigen3)
+if(NOT TARGET Eigen3::Eigen)
+	find_package(Eigen3)
+endif()
 
 option(BUILD_UNSUPPORTED_SOLVERS
 	"Build currently unsupported (i.e., test-failing) Load Flow solvers"
@@ -20,6 +22,7 @@ configure_file("Doxyfile.in" "Doxyfile")
 add_subdirectory(src)
 
 if(BUILD_TESTS)
+
 	find_package(Catch2 REQUIRED)
 	enable_testing()
 	add_subdirectory(test)
