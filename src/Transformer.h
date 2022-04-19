@@ -20,11 +20,10 @@ namespace fPotencia {
 	/*******************************************************************************
 	 *TransformerType class definition
 	 ******************************************************************************/
-	class TransformerType {
+	class TransformerType final {
 	public:
 
 		TransformerType(std::string name, cx_double leakage_z, cx_double magnetizing_z);
-
 
 		/*
 		 * Name: Name of the type
@@ -33,24 +32,18 @@ namespace fPotencia {
 		 */
 		TransformerType(std::string name, cx_mat Yabc);
 
-		virtual ~TransformerType();
-
-
 		// Type name    
 		std::string Name;
 
 		// Tap position [Value arround 1]    
 		double tap = 1.0;
 
-		double phase_shift = PI / 6.0; //30 deg by default (always in radians; 30 deg = pi/6 rad)
+		double phase_shift = PI / 6.0; // 30 deg by default (always in radians; 30 deg = pi/6 rad)
 
 		//Calculated parameters in per unit values
 		cx_double leakage_impedance; //r + j*x
 
-		cx_double magnetizing_impedance; //rfe + j*xm    
-
-	private:
-		Initialization_Mode init_mode; //Accounts if the Transformer type can be used to initialize three phase circuits
+		cx_double magnetizing_impedance; //rfe + j*xm
 	};
 
 	/*******************************************************************************

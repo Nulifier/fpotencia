@@ -13,10 +13,6 @@
 #include "Generator.h"
 
 namespace fPotencia {
-
-	/*
-	 * Constructor for non voltage controlled generators
-	 */
 	Generator::Generator(std::string name, uint connection_bus, double P, double Q) {
 		Name = name;
 		bus = connection_bus;
@@ -26,9 +22,6 @@ namespace fPotencia {
 		voltage_controlled = false;
 	}
 
-	/*
-	 * Class constructor for voltage controlled generators
-	 */
 	Generator::Generator(std::string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit) {
 		Name = name;
 		bus = connection_bus;

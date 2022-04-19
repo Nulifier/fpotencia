@@ -99,9 +99,9 @@ void power_flow_test() {
 	}*/
 
 	std::cout << "\n\n\n NR CURRENT \n\n " << std::endl;
-	Solver_NRcurrent NRcs(model);
+	NRcurrentSolver NRcs(model);
 	NRcs.maxIterations = 6;
-	NRcs.EPS = 1e-9;
+	NRcs.tolerance = 1e-9;
 	state = NRcs.solve();
 	if (state == Solver_State::Converged) {
 		std::cout << "Converged in " << NRcs.Iterations << " iterations." << std::endl;

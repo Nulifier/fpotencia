@@ -15,9 +15,11 @@
 
 namespace fPotencia {
 	class Generator {
-		public:
+	public:
+		/** Constructor for non-voltage controlled generators. */
 		Generator(std::string name, uint connection_bus, double P, double Q);
 
+		/** Constructor for voltage controlled generators. */
 		Generator(std::string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit);
 
 		std::string Name;

@@ -52,7 +52,7 @@ namespace fPotencia {
 		double v_set_point = 1.0; //only used if the bus is PV
 		/*------------------------------------------------------------*/
 
-		/** Print the bus results */
+		/** Print the bus results. */
 		void print();
 	};
 }

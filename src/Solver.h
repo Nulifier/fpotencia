@@ -5,6 +5,8 @@ namespace fPotencia {
 
 	class Solver {
 	public:
+		virtual ~Solver() = default;
+
 		//! \brief Result indicator flag for the #powerFlow() method
 		enum Result
 		{
@@ -15,39 +17,23 @@ namespace fPotencia {
 		};
 
 		/*!
-		 * \brief The default tolerance for the solution
+		 * \brief Allowable tolerance of the solver instance
 		 *
 		 * Solving the power flow equations is an interative process. For
 		 * every iteration, the parameters are adjusted in order to reach
 		 * convergence. The tolerance defines the allowable deviation/error
 		 * after which the process halts.
 		 */
-		static constexpr const double DEFAULT_SOLUTION_TOLERANCE = 1e-9;
+		double tolerance = 1e-9;
 
 		/*!
 		 * \brief Default maximum number of iterations after which the solver
 		 *  declares failure
 		 */
-		static constexpr const unsigned DEFAULT_MAX_ITERATIONS = 100;
-
-
-		/*!
-		 * \brief Allowable tolerance of the solver instance
-		 *
-		 * \sa DEFAULT_SOLUTION_TOLERANCE
-		 */
-		double tolerance = DEFAULT_SOLUTION_TOLERANCE;
-
+		unsigned int maxIterations = 100;
 
 		/*!
-		 * \brief Maximum number of iterations
-		 *
-		 * \sa DEFAULT_MAX_ITERATIONS
-		 */
-		unsigned int maxIterations = DEFAULT_MAX_ITERATIONS;
-
-		/*!
-		 * \brief Calculates the power flow in the given circuit
+		 * Calculates the power flow in the given circuit.
 		 *
 		 * This is the main method for any solver: It calculates the power
 		 * flow using the solver's specific method. Each individual solver
@@ -57,14 +43,19 @@ namespace fPotencia {
 		 * selected cannot work on the given grid. Details on this can be
 		 * found in the individual solver's documentation.
 		 *
-		 * \param[inout] grid The given circuit
-		 *
 		 * \return A flag indicating success or failure
 		 *
 		 * \throw UnfittingSolverError
 		 *
 		 * \sa Solver::Result
 		 */
-		virtual Result powerFlow(Circuit& grid) = 0;
+		virtual Result solve() = 0;
+
+		/**
+		 * Checks if this solver can solve this model.
+		 * @note The solver can still fail to solve the model, this just runs
+		 *       checks that can be done before.
+		 */
+		virtual bool canSolve() const = 0;
 	};
 }

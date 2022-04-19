@@ -11,6 +11,7 @@
 #pragma once
 
 #include <cmath>
+#include "Solver.h"
 #include "Circuit.h"
 #include "Solution.h"
 
@@ -23,32 +24,31 @@ namespace fPotencia {
 	 * By Vander Menengoy da Costa, Nelson Martins2 and Josk Luiz R. Pereira
 	 * 1999
 	 */
-	class Solver_NRcurrent {
+	class NRcurrentSolver : public Solver {
 	public:
+		NRcurrentSolver(Circuit& model);
 
-		Solver_NRcurrent(Circuit model);
-
-		Solver_NRcurrent(Circuit model, cx_solution sol_);
-
-		virtual ~Solver_NRcurrent();
+		/**
+		 * Construct the solver with an initial solution.
+		 */
+		NRcurrentSolver(Circuit& model, cx_solution sol_);
 
 		/*Properties*/
-		Circuit Model;
+		Circuit& Model;
 
-		double EPS = 1e-6;
+		double tolerance = 1e-6;
 
 		int Iterations = 0;
 
 		unsigned int maxIterations = 2;
 
-		Solver_State solve(); //Solves the grid
+		Result solve() override;
+
+		bool canSolve() const override;
 
 		void update_solution_power_from_circuit();
 
 	private:
-		
-		bool Debug = true;
-
 		std::vector<int> PQPV;
 
 		cx_solution Sol;
@@ -57,44 +57,25 @@ namespace fPotencia {
 
 		vec Qesp;
 
-		/*
-		 * This function returns the calculated increments of y
-		 */
+		/// This function returns the calculated increments of y.
 		void inc_y(vec &x, cx_solution &sol, uint N);
 
-
-		/*Calculate the a, b, c & d parameters
-		 */
+		/// Calculate the a, b, c & d parameters.
 		void abcd(uint k, cx_solution &sol, double &a, double &b, double &c, double &d);
 
-
-		/*
-		 * Calculates the Jacobian wich is passed by refference
-		 */
+		/// Calculates the Jacobian.
 		void Jacobian(mat &J, cx_solution &sol, uint N, bool updating);
 
+		/// Check if the solution converged.
+		bool converged(vec &X, uint Nj) const;
 
-		/*
-		 */
-		bool converged(vec &X, uint Nj); //check if the solution converged
-
-
-		/*
-		 */
+		/// Generates a solution object from a vector X.
 		void update_solution(cx_solution &sol, vec &x, uint N);
 
-
-		/*
-		 */
+		/// Calculate the slack bus power.
 		void calculate_slack_power(); //calculate the slack bus power   
 
-
-		/*
-		 */
-		bool checks(); //check the solvability with this method
-
-		/*
-		 */
-		void fill_especifyed_values();
+		/// Fills the initial power values.
+		void fill_specified_values();
 	};
 }

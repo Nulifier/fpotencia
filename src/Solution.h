@@ -27,7 +27,7 @@ namespace fPotencia {
 
 		bool initialized = false;
 
-		uint Lenght;
+		uint Length;
 
 		void copy_from(cx_solution orig);
 
@@ -73,7 +73,7 @@ namespace fPotencia {
 
 		bool initialized = false;
 
-		uint Lenght;
+		uint Length;
 
 		void copy_from(solution orig);
 

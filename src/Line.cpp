@@ -107,10 +107,6 @@ namespace fPotencia {
 		power_bus2_to_bus1 = power(1, 0);
 
 		power_losses = power_bus1_to_bus2 + power_bus2_to_bus1;
-		/*if (power_bus1_to_bus2.real() > power_bus2_to_bus1.real())
-				power_losses = power_bus1_to_bus2 + power_bus2_to_bus1;
-				else
-				power_losses = power_bus2_to_bus1 - power_bus1_to_bus2;*/
 	}
 
 	void Line::print() {

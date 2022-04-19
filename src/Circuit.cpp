@@ -490,11 +490,11 @@ namespace fPotencia {
 
 		//Undo the power base change
 		cx_double s_base(Sbase, 0);
-		for (uint i = 0; i < sol_.Lenght; i++)
+		for (uint i = 0; i < sol_.Length; i++)
 			sol_.S(i) *= s_base;
 
 		//Undo the voltage change and assign the buses power and voltage
-		for (uint i = 0; i < sol_.Lenght; i++) {
+		for (uint i = 0; i < sol_.Length; i++) {
 			buses[i].voltage_pu = sol_.V.coeff(i);
 			sol_.V(i) *= cx_double(buses[i].nominal_voltage, 0);
 			buses[i].voltage = sol_.V.coeff(i);

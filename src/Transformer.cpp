@@ -31,14 +31,6 @@ namespace fPotencia {
 		phase_shift = PI / 6.0;
 	}
 
-	/*
-	 * Transformer type object destructor
-	 */
-	TransformerType::~TransformerType() {
-	}
-
-
-
 	/***************************************************************************
 	 * Transformer class implementation
 	 ***************************************************************************/
@@ -145,9 +137,6 @@ namespace fPotencia {
 		power_secondary_to_primary = power(1, 0);
 
 		power_losses = power_primary_to_secondary + power_secondary_to_primary;
-
-		//cout << "Power at " + Name + "\n" << power << endl;
-		//cout << "\t Losses: " << power_losses << endl;
 	}
 
 	/*

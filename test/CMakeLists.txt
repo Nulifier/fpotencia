@@ -1,6 +1,8 @@
 add_executable(fpotencia_test
-	test.cpp
 	test-models.cpp
+
+	nr-current-solver-test.cpp
+	nr-polar-solver-test.cpp
 )
 
 target_link_libraries(fpotencia_test

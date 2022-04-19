@@ -47,17 +47,17 @@ namespace fPotencia {
 		Q.setZero(n);
 		V.setZero(n);
 		D.setZero(n);
-		Lenght = n;
+		Length = n;
 	}
 
 	/*
 	 * set zero to the container vectors
 	 */
 	void solution::clear() {
-		P.setZero(Lenght);
-		Q.setZero(Lenght);
-		V.setZero(Lenght);
-		D.setZero(Lenght);
+		P.setZero(Length);
+		Q.setZero(Length);
+		V.setZero(Length);
+		D.setZero(Length);
 	}
 
 	/*
@@ -93,8 +93,8 @@ namespace fPotencia {
 	 */
 	cx_solution solution::get_cx() {
 		cx_solution sol;
-		sol.resize(Lenght);
-		for (uint i = 0; i < Lenght; i++) {
+		sol.resize(Length);
+		for (uint i = 0; i < Length; i++) {
 			sol.S(i) = Scx(i);
 			sol.V(i) = Vcx(i);
 		}
@@ -104,8 +104,8 @@ namespace fPotencia {
 	/*real power vector
 	 */
 	vec cx_solution::P() {
-		vec val(Lenght);
-		for (uint i = 0; i < Lenght; i++)
+		vec val(Length);
+		for (uint i = 0; i < Length; i++)
 			val(i) = S.coeff(i).real();
 		return val;
 	}
@@ -113,8 +113,8 @@ namespace fPotencia {
 	/*Imaginary power vector
 	 */
 	vec cx_solution::Q() {
-		vec val(Lenght);
-		for (uint i = 0; i < Lenght; i++)
+		vec val(Length);
+		for (uint i = 0; i < Length; i++)
 			val(i) = S.coeff(i).imag();
 		return val;
 	}
@@ -125,7 +125,7 @@ namespace fPotencia {
 	void solution::print(const std::string& title) {
 		std::cout << title << std::endl;
 		std::cout << "P\tQ\tV\tD" << std::endl;
-		for (uint i = 0; i < Lenght; i++) {
+		for (uint i = 0; i < Length; i++) {
 			std::cout << P[i] << "\t" << Q[i] << "\t" << V[i] << "\t" << D[i] << std::endl;
 		}
 	}
@@ -155,7 +155,7 @@ namespace fPotencia {
 		V = cx_vec(n);
 		S.setZero(n);
 		V.setZero(n);
-		Lenght = n;
+		Length = n;
 	}
 
 	/*
@@ -164,7 +164,7 @@ namespace fPotencia {
 	void cx_solution::print(const std::string& title) {
 		std::cout << title << std::endl;
 		std::cout << "S\t\tV" << std::endl;
-		for (uint i = 0; i < Lenght; i++) {
+		for (uint i = 0; i < Length; i++) {
 			std::cout << S[i] << "\t\t" << V[i] << "->" << abs(V[i]) << "^" << arg(V[i]) << std::endl;
 		}
 	}
@@ -173,8 +173,8 @@ namespace fPotencia {
 	 * TH function returns a n x 1 matrix containing the complex power
 	 */
 	cx_vec cx_solution::getS() {
-		cx_vec s(Lenght, 1);
-		for (uint i = 0; i < Lenght; i++)
+		cx_vec s(Length, 1);
+		for (uint i = 0; i < Length; i++)
 			s(i) = S.coeff(i);
 
 		return s;
@@ -184,8 +184,8 @@ namespace fPotencia {
 	 * This function returns a n x 1 matrix containing the onplex voltage
 	 */
 	cx_vec cx_solution::getV() {
-		cx_vec s(Lenght);
-		for (uint i = 0; i < Lenght; i++)
+		cx_vec s(Length);
+		for (uint i = 0; i < Length; i++)
 			s(i) = V.coeff(i);
 
 		return s;
@@ -195,8 +195,8 @@ namespace fPotencia {
 	 * This function returs a vector containing the active power
 	 */
 	mat cx_solution::getP() {
-		mat s(Lenght, 1);
-		for (uint i = 0; i < Lenght; i++)
+		mat s(Length, 1);
+		for (uint i = 0; i < Length; i++)
 			s(i, 0) = S.coeff(i).real();
 
 		return s;

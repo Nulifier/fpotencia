@@ -11,58 +11,35 @@
 #include "Solver_NRcurrent.h"
 
 namespace fPotencia {
-
-	/* Constructor
-	 */
-	Solver_NRcurrent::Solver_NRcurrent(Circuit model) {
-		Model = model;
-
+	NRcurrentSolver::NRcurrentSolver(Circuit& model): Model(model) {
 		Sol = Model.get_initial_cx_solution();
 		if (!Sol.initialized) {
 			Model.compile(false);
 			Sol = Model.get_initial_cx_solution();
 		}
 
-		fill_especifyed_values();
+		fill_specified_values();
 
-		if (!checks())
+		if (!canSolve()) {
 			throw std::invalid_argument("The circuit failed the solver compatibility test.");
+		}
 	}
 
-	/* Constructor where the solution is given
-	 */
-	Solver_NRcurrent::Solver_NRcurrent(Circuit model, cx_solution sol_) {
-		Model = model;
-
+	NRcurrentSolver::NRcurrentSolver(Circuit& model, cx_solution sol_): Model(model) {
 		Sol = sol_;
 
-		fill_especifyed_values();
+		fill_specified_values();
 
-		if (!checks())
+		if (!canSolve()) {
 			throw std::invalid_argument("The circuit failed the solver compatibility test.");
+		}
 	}
 
-	/* Destructor
-	 */
-	Solver_NRcurrent::~Solver_NRcurrent() {
+	bool NRcurrentSolver::canSolve() const {
+		return Model.slackBusIndices.size() <= 1;
 	}
 
-
-	//check the solvability with this method
-
-	bool Solver_NRcurrent::checks() {
-		bool val = true;
-
-		//Only one slack bus allowed
-		if (Model.slackBusIndices.size() > 1)
-			val = false;
-
-		return val;
-	}
-
-	/*Fills the initial power values
-	 */
-	void Solver_NRcurrent::fill_especifyed_values() {
+	void NRcurrentSolver::fill_specified_values() {
 
 		uint N = Model.loadBusIndices.size() + Model.generatorBusIndices.size();
 		for (uint i = 0; i < Model.buses.size(); i++) {
@@ -81,13 +58,7 @@ namespace fPotencia {
 
 	}
 
-	/* This function returns the calculated increments of y
-	 */
-	void Solver_NRcurrent::inc_y(vec &x, cx_solution &sol, uint N) {
-		if (Debug)
-			std::cout << "\nΔY:" << std::endl;
-
-
+	void NRcurrentSolver::inc_y(vec &x, cx_solution &sol, uint N) {
 		uint a = 0;
 		uint k;
 		double Ical_r, Ical_m, incP, incQ, Vk2;
@@ -97,7 +68,7 @@ namespace fPotencia {
 			//Increment of real current
 			Ical_r = 0;
 			Ical_m = 0;
-			for (uint i = 0; i < Model.buses.size(); i++) {
+			for (uint i = 0; i < Model.buses.size(); ++i) {
 				Ical_r += Model.G(k, i) * sol.Vr(i) - Model.B(k, i) * sol.Vi(i);
 				Ical_m += Model.G(k, i) * sol.Vi(i) + Model.B(k, i) * sol.Vr(i);
 			}
@@ -113,33 +84,20 @@ namespace fPotencia {
 
 				//increment of real current
 				x(a + 1) = (sol.Vr(k) * incP + sol.Vi(k) * incQ) / Vk2; //2
-
-				if (Debug) {
-					std::cout << "ΔIm" << k << "\t=\t" << x.coeff(a) << std::endl;
-					std::cout << "ΔIr" << k << "\t=\t" << x.coeff(a + 1) << std::endl;
-				}
-			} else if (Model.buses[k].Type == BusType::PV) {
-
+			}
+			else if (Model.buses[k].Type == BusType::PV) {
 				//increment of imaginary current
 				x(a) = sol.Vi(k) * incP / Vk2; //3
 
 				//increment of real current
 				x(a + 1) = sol.Vr(k) * incP / Vk2; //4
-
-				if (Debug) {
-					std::cout << "ΔIm*" << k << "\t=\t" << x.coeff(a) << std::endl;
-					std::cout << "ΔIr*" << k << "\t=\t" << x.coeff(a + 1) << std::endl;
-				}
 			}
 
 			a += 2;
 		}
-
 	}
 
-	/*Calculates the abcd parameters
-	 */
-	void Solver_NRcurrent::abcd(uint k, cx_solution &sol, double &a, double &b, double &c, double &d) {
+	void NRcurrentSolver::abcd(uint k, cx_solution &sol, double &a, double &b, double &c, double &d) {
 		double V4 = pow(sol.Vr(k), 4) + pow(sol.Vi(k), 4);
 
 		a = (sol.Qi(k) * (sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k))
@@ -154,24 +112,16 @@ namespace fPotencia {
 		c = -b;
 	}
 
-	/*
-	 * Calculates the Jacobian
-	 */
-	void Solver_NRcurrent::Jacobian(mat &J, cx_solution &sol, uint N, bool updating) {
-
+	void NRcurrentSolver::Jacobian(mat &J, cx_solution &sol, uint N, bool updating) {
 		/* indices: x, y: conceptual bus index
 		 *          i, k: real bus indices
 		 *          a, b: jacobian indices
-		 *
 		 */
 		uint Nj = 2 * N;
 
-
-		//cout << "Updating:" << updating << endl;
-		if (!updating)
+		if (!updating) {
 			J.setZero(Nj, Nj);
-
-		//Model.print_buses_state();
+		}
 
 		//W
 		uint a = 0;
@@ -200,13 +150,8 @@ namespace fPotencia {
 							J(a, b + 1) = G1;
 							J(a + 1, b) = G2;
 							J(a + 1, b + 1) = B2;
-
-							//only to debug
-							/*J(a, b) = 1.1;
-							J(a, b + 1) = 1.2;
-							J(a + 1, b) = 1.3;
-							J(a + 1, b + 1) = 1.4;*/
-						} else if (Model.buses[k].Type == BusType::PV) {//Ykk**
+						}
+						else if (Model.buses[k].Type == BusType::PV) {//Ykk**
 							// always update
 
 							Vk2 = sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k); //Square voltage
@@ -215,16 +160,9 @@ namespace fPotencia {
 							J(a, b + 1) = sol.Vr(k) / Vk2;
 							J(a + 1, b) = B2 - G2 * sol.Vi(k) / sol.Vr(k);
 							J(a + 1, b + 1) = -1.0 * sol.Vi(k) / Vk2;
-
-							//only to debug
-							/*J(a, b) = 2.1;
-							J(a, b + 1) = 2.2;
-							J(a + 1, b) = 2.3;
-							J(a + 1, b + 1) = 2.4;*/
 						}
-
-					} else { //Non diagonal sub-Jacobians
-
+					}
+					else { //Non diagonal sub-Jacobians
 						if (Model.buses[k].Type == BusType::PQ
 								&& Model.buses[i].Type == BusType::PQ) { //Ykm*
 							//does not update
@@ -233,38 +171,22 @@ namespace fPotencia {
 								J(a, b + 1) = Model.G(k, i);
 								J(a + 1, b) = Model.G(k, i);
 								J(a + 1, b + 1) = -1 * Model.B(k, i);
-
-								//only to debug
-								/*J(a, b) = 2;
-								J(a, b + 1) = 2;
-								J(a + 1, b) = 2;
-								J(a + 1, b + 1) = 2;*/
 							}
-						} else if (Model.buses[i].Type == BusType::PV) { //Ylk**
+						}
+						else if (Model.buses[i].Type == BusType::PV) { //Ylk**
 							// always update
 							J(a, b) = Model.G(k, i) - Model.B(k, i) * sol.Vi(k) / sol.Vr(k);
 							J(a, b + 1) = 0.0;
 							J(a + 1, b) = -1.0 * Model.B(k, i) - Model.G(k, i) * sol.Vi(k) / sol.Vr(k);
 							J(a + 1, b + 1) = 0.0;
-
-							//only to debug
-							/*J(a, b) = 3;
-							J(a, b + 1) = 0;
-							J(a + 1, b) = 3;
-							J(a + 1, b + 1) = 0;*/
-						} else if (Model.buses[k].Type == BusType::PV) {//Ykl** = Ykl*
+						}
+						else if (Model.buses[k].Type == BusType::PV) {//Ykl** = Ykl*
 							//does not update
 							if (!updating) {
 								J(a, b) = Model.B(k, i);
 								J(a, b + 1) = Model.G(k, i);
 								J(a + 1, b) = Model.G(k, i);
 								J(a + 1, b + 1) = -1 * Model.B(k, i);
-
-								//only to debug
-								/*J(a, b) = 2;
-								J(a, b + 1) = 2;
-								J(a + 1, b) = 2;
-								J(a + 1, b + 1) = 2;*/
 							}
 						}
 					}
@@ -276,21 +198,17 @@ namespace fPotencia {
 		}
 	}
 
-	/*check if the solution converged
-	 */
-	bool Solver_NRcurrent::converged(vec &X, uint Nj) {
-		for (uint i = 0; i < Nj; i++)
-			if (abs(X.coeff(i)) > EPS)
+	bool NRcurrentSolver::converged(vec &X, uint Nj) const {
+		for (uint i = 0; i < Nj; i++) {
+			if (abs(X.coeff(i)) > tolerance) {
 				return false;
+			}
+		}
 
 		return true;
 	}
 
-	/* Generates a solution object from a vector X
-	 */
-	void Solver_NRcurrent::update_solution(cx_solution & sol, vec &x, uint N) {
-		if (Debug)
-			std::cout << "\nΔX:" << std::endl;
+	void NRcurrentSolver::update_solution(cx_solution & sol, vec &x, uint N) {
 		uint a = 0;
 		uint k;
 		for (uint idx = 0; idx < N; idx++) { //filas
@@ -301,12 +219,8 @@ namespace fPotencia {
 				//x[a+1] -> inc Vi
 				sol.V(k) += cx_double(x.coeff(a), x.coeff(a + 1));
 
-				if (Debug) {
-					std::cout << "ΔVr*" << k << "\t=\t" << x.coeff(a) << std::endl;
-					std::cout << "ΔVm*" << k << "\t=\t" << x.coeff(a + 1) << std::endl;
-				}
-
-			} else if (Model.buses[k].Type == BusType::PV) {
+			}
+			else if (Model.buses[k].Type == BusType::PV) {
 				//x[a] -> inc Vi
 				//x[a+1] -> inc Q                
 				sol.V(k) = cx_double(sol.Vr(k), sol.Vi(k) + x.coeff(a));
@@ -327,21 +241,14 @@ namespace fPotencia {
 					Model.buses[k].Type = BusType::PQ;
 					sol.S(k) = cx_double(sol.Pi(k), Model.buses[k].max_q);
 				}
-
-				if (Debug) {
-					std::cout << "ΔVm*" << k << "\t=\t" << x.coeff(a) << std::endl;
-					std::cout << "ΔQ*" << k << "\t=\t" << x.coeff(a + 1) << std::endl;
-				}
 			}
 
 			a += 2;
 		}
 	}
 
-	/*calculate the slack bus power 
-	 */
-	void Solver_NRcurrent::calculate_slack_power() {
-		for (uint k : Model.slackBusIndices) {
+	void NRcurrentSolver::calculate_slack_power() {
+		for (unsigned int k : Model.slackBusIndices) {
 			cx_double I(0.0, 0.0);
 			for (uint j = 0; j < Model.buses.size(); j++) {
 				I += Model.Y.coeff(k, j) * Sol.V(j);
@@ -351,12 +258,7 @@ namespace fPotencia {
 		}
 	}
 
-	/*Solves the grid
-	 */
-	Solver_State Solver_NRcurrent::solve() {
-
-		Sol.print("Initial solution:");
-
+	Solver::Result NRcurrentSolver::solve() {
 		uint npv = Model.generatorBusIndices.size();
 		uint npq = Model.loadBusIndices.size();
 		uint N = npq + npv;
@@ -371,21 +273,18 @@ namespace fPotencia {
 		inc_y(incY, Sol, N);
 
 		//check convergence
-		bool converged_ = converged(incY, Nj);
+		bool didConverge = converged(incY, Nj);
 		bool updating = false;
 
-		Iterations = 0;
-		while (!converged_ && Iterations < maxIterations) {
-
-			//prints
-			std::cout << "\n\nIter: " << Iterations << "\n" << std::endl;
-
+		for (unsigned int i = 0; i < maxIterations && !didConverge; ++i) {
 			//Update Jacobian
 			Jacobian(J, Sol, N, updating);
-			Eigen::FullPivLU<mat>LU(J); //Full pivot LU 
-			//cout << "\nJ:\n" << J << endl;
-			if (!updating)
+			
+			Eigen::FullPivLU<mat> LU(J); //Full pivot LU 
+			
+			if (!updating) {
 				updating = true; //the Jacobian has been created, now only update it.
+			}
 
 			//Solve the linear system to get the increments 
 			incX = LU.solve(incY);
@@ -393,33 +292,24 @@ namespace fPotencia {
 			//Update the solution object with the solution vector: recalculate
 			// the voltages with the increments
 			update_solution(Sol, incX, N);
-			Sol.print("solution:");
 
 			//Update mismatches
 			inc_y(incY, Sol, N); //generate vector of mismatches
 
 			//check convergence
-			converged_ = converged(incY, Nj);
-
-			Iterations++;
+			didConverge = converged(incY, Nj);
 		}
 
-		//Sol.print("NR current solution:");
-
-
-		if (converged_) {
+		if (didConverge) {
 			calculate_slack_power();
 			Model.set_solution(Sol);
-			return Solver_State::Converged;
+			return Solver::Solved;
 		} else {
-			Sol.print("Solution so far:");
-			return Solver_State::Not_Converged;
+			return Solver::NotSolved;
 		}
 	}
 
-	/*
-	 */
-	void Solver_NRcurrent::update_solution_power_from_circuit() {
+	void NRcurrentSolver::update_solution_power_from_circuit() {
 
 	}
 }
