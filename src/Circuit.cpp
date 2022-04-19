@@ -38,10 +38,10 @@ namespace fPotencia {
 	void Circuit::add_Bus(Bus &bus) {
 		if (find_bus(bus.Name) == -1) {
 
-			if (buses.size() == 0)
+			if (buses.empty())
 				bus.index = 0;
 			else
-				bus.index = buses[buses.size() - 1].index + 1; //Sequencial bus numbering
+				bus.index = buses.back().index + 1; //Sequencial bus numbering
 
 			buses.push_back(bus);
 		} else {
@@ -247,10 +247,11 @@ namespace fPotencia {
 		//Calculate the bus types
 
 		//the presence of an external grid makes the bus VD (or slack)
-		for (uint i = 0; i < externalGrids.size(); i++)
+		for (uint i = 0; i < externalGrids.size(); ++i) {
 			if (buses[externalGrids[i].bus].Type == undefined_bus_type) {
 				buses[externalGrids[i].bus].Type = VD;
 			}
+		}
 
 		/*the presence of an generator makes the bus PV (if it is voltage
 		 * controlled) or PQ otherwise
@@ -291,7 +292,6 @@ namespace fPotencia {
 			if (buses[i].nominal_voltage > Vbase)
 				Vbase = buses[i].nominal_voltage; //set Vbase as the biggest voltage
 
-
 			//set the bus types lists
 			switch (buses[i].Type) {
 			case VD:
@@ -321,9 +321,10 @@ namespace fPotencia {
 		//create the admittance matrix
 		compose_Z();
 
-		if (guess_angles)
+		if (guess_angles) {
 			//Calculate the power connected to each bus according to the type (this time with the new voltage)
 			correct_initial_solution();
+		}
 	}
 
 	/*

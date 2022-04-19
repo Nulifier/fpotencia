@@ -70,7 +70,7 @@ namespace fPotencia {
 				double a,
 				double x) const;
 
-		//! \brief Checks whether a particular solution converged
+		/// Checks whether a particular solution converged.
 		bool converged(vec const& PQinc, uint npqpvpq) const;
 
 		/*!
