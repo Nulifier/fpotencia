@@ -108,8 +108,7 @@ namespace fPotencia {
 	}
 
 	void NRpolarSolver::correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X) {
-
-		/*Find the PV buses that violate the reative power limit*/
+		// Find the PV buses that violate the reative power limit
 		std::vector<int> lst;
 		uint k;
 		for (uint i = npq; i < npq + npv; i++) {
@@ -118,27 +117,27 @@ namespace fPotencia {
 				if (Sol.Q(k) >= Model.buses[k].max_q) {
 					Sol.Q(k) = Model.buses[k].max_q; //truncate Q to the limit
 					lst.push_back(k); //add the PV bus to the list to be treated as a PQ bus
-					std::cout << "PV to PQ: " << Model.buses[k].Name << std::endl;
 				}
-			} else {
-				std::cout << "Probably invalid reactie power value at bus " << Model.buses[k].Name << std::endl;
+			}
+			else {
+				//std::cout << "Probably invalid reactie power value at bus " << Model.buses[k].Name << std::endl;
 			}
 		}
 
-		/*Change the lists and arrays size to accomodate the new situation*/
+		// Change the lists and arrays size to accomodate the new situation
 		npq += lst.size();
 		npv -= lst.size();
 		uint npqpvpq = 2 * npq + npv; //size of the arrays
 
-		//Resize the linear system, since if npq and npv vary their size vary as well
+		// Resize the linear system, since if npq and npv vary their size vary as well
 		J = mat(npqpvpq, npqpvpq);
 		K = vec(npqpvpq);
 		X = vec(npqpvpq);
 
-		//add the PV buses indices from lst to the PQ list
+		// add the PV buses indices from lst to the PQ list
 		LastPQ.insert(LastPQ.end(), lst.begin(), lst.end());
 
-		//Remove the same lst indices fromthe PV list
+		// Remove the same lst indices fromthe PV list
 		for (uint k : lst)
 			LastPV.erase(std::remove(LastPV.begin(), LastPV.end(), k), LastPV.end());
 
@@ -313,7 +312,6 @@ namespace fPotencia {
 		return x;
 	}
 	
-
 	double NRpolarSolver::mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv){
 		Jacobian(J2, dV, dD, npq, npv);
 		
@@ -416,7 +414,7 @@ namespace fPotencia {
 		get_power_inc(K, npq, npv);
 		bool didConverge = converged(K, npqpvpq);
 
-		for (unsigned int i = 0; i < maxIterations && !didConverge; ++i) {
+		for (unsigned int i = 0; (i < maxIterations) && !didConverge; ++i) {
 			Jacobian(J, Sol.V, Sol.D, npq, npv);
 
 			Eigen::FullPivLU<mat> lu(J); //Full pivot LU
@@ -433,6 +431,8 @@ namespace fPotencia {
 			get_power_inc(K, npq, npv);
 
 			didConverge = converged(K, npqpvpq);
+
+			//std::cout << "Iteration " << i << std::endl;
 		}
 		
 		//Calculate the reactive power for the PV buses:
