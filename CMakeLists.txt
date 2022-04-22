@@ -4,11 +4,14 @@ project(fPotencia VERSION 0.8 LANGUAGES CXX)
 include(FindDoxygen)
 include(GNUInstallDirs)
 
+option(USE_OPENMP "Include support for parallelization through OpenMP" ON)
+
 option(BUILD_PROFILE "Build the profile for fPotencia" OFF)
 
 if(NOT TARGET Eigen3::Eigen)
 	find_package(Eigen3)
 endif()
+find_package(OpenMP)
 
 add_subdirectory(src)
 

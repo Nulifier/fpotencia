@@ -28,9 +28,15 @@ target_include_directories(fpotencia
 		${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+if(USE_OPENMP AND NOT OpenMP_CXX_FOUND)
+	message(WARNING "Requested OpenMP support but the library was not installed")
+endif()
+
 target_link_libraries(fpotencia
 	PUBLIC
 		Eigen3::Eigen
+		# Include OpenMP if requested and found
+		$<$<AND:$<BOOL:OpenMP_CXX_FOUND>,$<BOOL:USE_OPENMP>>:OpenMP::OpenMP_CXX>
 )
 
 install(TARGETS fpotencia
