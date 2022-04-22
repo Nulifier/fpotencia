@@ -7,11 +7,9 @@ add_executable(fpotencia_test
 
 target_link_libraries(fpotencia_test
 	PUBLIC
-		fpotencia
 		Catch2::Catch2WithMain
+		fpotencia
 )
 
-include(CTest)
 include(Catch)
-
 catch_discover_tests(fpotencia_test)
