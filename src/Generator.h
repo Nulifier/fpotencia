@@ -37,6 +37,6 @@ namespace fPotencia {
 
 		bool voltage_controlled = false;
 
-	   bool Vset_in_per_unit = false;
+		bool Vset_in_per_unit = false;
 	};
 }
