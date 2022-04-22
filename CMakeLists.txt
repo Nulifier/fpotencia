@@ -4,6 +4,7 @@ project(fPotencia VERSION 0.8 LANGUAGES CXX)
 include(FindDoxygen)
 include(GNUInstallDirs)
 
+option(BUILD_PROFILE "Build the profile for fPotencia" OFF)
 if(NOT TARGET Eigen3::Eigen)
 	find_package(Eigen3)
 endif()
@@ -27,6 +28,9 @@ if(BUILD_TESTS)
 	add_subdirectory(test)
 endif()
 
+if(BUILD_PROFILE)
+	add_subdirectory(profile)
+endif()
 if(DOXYGEN_FOUND)
 	add_custom_target(doc
 		COMMAND ${DOXYGEN_EXECUTABLE}
