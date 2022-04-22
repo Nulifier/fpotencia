@@ -157,16 +157,7 @@ namespace fPotencia {
 		matrix = m;
 	}
 
-	/*
-	 * This function creates the reduced impedance matrix of the circuit.
-	 * 
-	 * This matrix contains a null column and row in the indices of the slack
-	 * (or VD) buses. This is usefull for the numerical algorithms to reach
-	 * a good solution
-	 * 
-	 * Only applicable after Y is created
-	 */
-	void Circuit::compose_Z() {
+	void Circuit::compose_Zred() {
 		//This is the reduced version of Z.
 		//The Z-bus methods require that the slack bus column and row are removed
 
@@ -180,16 +171,20 @@ namespace fPotencia {
 		// perform a fast LU inverse of the reduced admittance matrix
 		//this leads to the reduced impedance matrix (of the wrong dimensions)
 		Eigen::FullPivLU<cx_mat> lu(Yred);
-		Zred = lu.inverse();
+		m_Zred = lu.inverse();
 
 		//to make it of the correct dimensions, lets add zero rows and columns
 		//where there were removed at the beginning
 		for (uint i = 0; i < slackBusIndices.size(); i++)
-			expandOnPoint(Zred, slackBusIndices[i]);
+			expandOnPoint(*m_Zred, slackBusIndices[i]);
+	}
 
-
+	/*
+	 * Only applicable after Y is created
+	 */
+	void Circuit::compose_Z() {
 		Eigen::FullPivLU<cx_mat> lu2(Y);
-		Z = lu2.inverse();
+		m_Z = lu2.inverse();
 	}
 
 	/* Given the circuir objects, it build the relations among them: Impedance 
@@ -284,7 +279,7 @@ namespace fPotencia {
 		compose_Y();
 
 		//create the admittance matrix
-		compose_Z();
+		//compose_Z();
 
 		if (guess_angles) {
 			//Calculate the power connected to each bus according to the type (this time with the new voltage)
@@ -392,8 +387,8 @@ namespace fPotencia {
 	void Circuit::correct_initial_solution() {
 
 		//this generates the DC-Solution angles
-		dc_angles = Zred.imag() * cx_sol.getP();
-		std::cout << "Initial D:\n" << dc_angles << std::endl;
+		dc_angles = Zred().imag() * cx_sol.getP();
+		//std::cout << "Initial D:\n" << dc_angles << std::endl;
 
 		for (uint i = 0; i < buses.size(); i++) {
 			sol.D(i) = dc_angles(i);

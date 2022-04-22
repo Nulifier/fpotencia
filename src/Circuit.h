@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include <optional>
 #include <vector>
 #include <math.h>
 
@@ -36,10 +37,9 @@ namespace fPotencia {
 		typedef std::vector<Shunt> Shunts;
 		typedef std::vector<ExternalGrid> ExternalGrids;
 
-		/*!
-		 * \brief Addmitance matrix
-		 *
-		 * \sa #compile()
+		/**
+		 * Addmitance matrix.
+		 * @sa #compile()
 		 */
 		sp_cx_mat Y;
 
@@ -48,15 +48,20 @@ namespace fPotencia {
 		 *
 		 * \sa #compile()
 		 */
-		cx_mat Z;
-
+		const cx_mat& Z() {
+			if (!m_Z) compose_Z();
+			return *m_Z;
+		}
 
 		/*!
 		 * \brief Reduced circuit impedance matrix, excluding the slack bus
 		 *
 		 * \sa #compile()
 		 */
-		cx_mat Zred;
+		const cx_mat& Zred() {
+			if (!m_Zred) compose_Zred();
+			return *m_Zred;
+		};
 
 
 		//! \brief Buses contained in the grid
@@ -224,10 +229,10 @@ namespace fPotencia {
 		 */
 		void compose_Y();
 
-		/*
-		 * Composes the circuit impedance matrix and reduced ipedance matrix by
-		 * inverting the admittance matrix
-		 */
+		/// Composes the reduced circuit impedance matrix by inverting the admittance matrix.
+		void compose_Zred();
+
+		/// Composes the circuit impedance matrix by inverting the admittance matrix.
 		void compose_Z();
 
 		/*
@@ -260,5 +265,8 @@ namespace fPotencia {
 
 		double Vbase;
 
+		// Laziliy evaluated values
+		std::optional<cx_mat> m_Z;
+		std::optional<cx_mat> m_Zred;
 	};
 }
