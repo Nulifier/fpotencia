@@ -76,3 +76,38 @@ TEST_CASE("NRpolarSolver", "[solver]") {
 		REQUIRE(model.buses.at(0).power.real() == Approx(86.5).margin(0.1));
 	}
 }
+
+TEST_CASE("NRpolarSolver Benchmarks", "[.][benchmark]") {
+	BENCHMARK_ADVANCED("IEEE 14 Bus")(Catch::Benchmark::Chronometer meter) {
+		auto model = TestModels::ieee14Model();
+		model.compile(false);
+
+		fPotencia::NRpolarSolver solver(model);
+
+		meter.measure([&] {
+			return solver.solve();
+		});
+	};
+
+	BENCHMARK_ADVANCED("IEEE 300 Bus")(Catch::Benchmark::Chronometer meter) {
+		auto model = TestModels::ieee300Model();
+		model.compile(false);
+
+		fPotencia::NRpolarSolver solver(model);
+
+		meter.measure([&] {
+			return solver.solve();
+		});
+	};
+
+	BENCHMARK_ADVANCED("IEEE 300 Bus with guessing angles")(Catch::Benchmark::Chronometer meter) {
+		auto model = TestModels::ieee300Model();
+		model.compile(true);
+
+		fPotencia::NRpolarSolver solver(model);
+
+		meter.measure([&] {
+			return solver.solve();
+		});
+	};
+}
