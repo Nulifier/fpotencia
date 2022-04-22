@@ -14,13 +14,13 @@
 
 namespace fPotencia {
 	Bus::Bus(std::string name, BusType type, double Bus_Nominal_Voltage) {
-		Name = name;
+		//Name = name;
 		Type = type;
 		nominal_voltage = Bus_Nominal_Voltage;
 	}
 
 	void Bus::print() {
-		std::cout << Name + " -> " + BusType_name[Type] << std::endl;
+		//std::cout << Name + " -> " + BusType_name[Type] << std::endl;
 		std::cout << "\tPower: " << power << std::endl;
 
 		std::cout << "\tVoltage: " << voltage << "\tVoltage p.u.: " << voltage_pu << std::endl;

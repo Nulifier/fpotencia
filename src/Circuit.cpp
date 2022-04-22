@@ -23,58 +23,24 @@
 using namespace Eigen;
 
 namespace fPotencia {
-	/*
-	 * Add bus to the class.
-	 * 
-	 * This function adds a bus object and assigns an ordinal number to the bus 
-	 * object incomming to the function, so that object, even externally will
-	 * be refferenced to this circuit.
-	 * 
-	 * I want to force all the buses to have different names.
-	 * 
-	 * This is usefull to tell the branch elements the indices of the buses
-	 * where it is connected to.
-	 */
 	void Circuit::add_Bus(Bus &bus) {
-		if (find_bus(bus.Name) == -1) {
-
-			if (buses.empty())
-				bus.index = 0;
-			else
-				bus.index = buses.back().index + 1; //Sequencial bus numbering
-
-			buses.push_back(bus);
-		} else {
-			std::cout << "The bus " << bus.Name << " has been already added, therefore this object is not being added" << std::endl;
+		if (buses.empty()) {
+			bus.index = 0;
 		}
+		else {
+			bus.index = buses.back().index + 1; //Sequencial bus numbering
+		}
+
+		buses.push_back(bus);
 	}
 
-	/*
-	 * Remove bus by object: Removes a bus from the list, but all the buses
-	 * indices remain the same
-	 */
 	void Circuit::remove_Bus(Bus bus) {
-		int index = find_bus(bus.Name);
-		buses.erase(buses.begin() + index);
-	}
-
-	/*
-	 * Remove bus by name: Removes a bus from the list, but all the buses
-	 * indices remain the same
-	 */
-	void Circuit::remove_Bus(std::string bus_name) {
-		int index = find_bus(bus_name);
-		buses.erase(buses.begin() + index);
-	}
-
-	/*Get bus index given the bus name*/
-	int Circuit::find_bus(std::string bus_name) {
-		bool found = false;
-		for (uint i = 0; i < buses.size(); i++)
-			if (!bus_name.compare(buses[i].Name))
-				return i;
-
-		return -1;
+		for (Buses::const_iterator itr = buses.begin(); itr != buses.end(); ++itr) {
+			if (itr->index == bus.index) {
+				buses.erase(itr);
+				return;
+			}
+		}
 	}
 
 	/*
@@ -118,10 +84,9 @@ namespace fPotencia {
 			//come already in per unit
 			for (uint i = 0; i < transformers.size(); i++) {
 				transformers[i].get_element_Y(n, Y);
-				//std::cout << "\n\n" << std::endl;
 			}
-
-		} else {
+		}
+		else {
 			throw std::invalid_argument("There are no buses");
 		}
 	}
@@ -244,9 +209,9 @@ namespace fPotencia {
 		//cout << "max power:" << maxpower << endl;
 		Sbase = pow(10, 1 + floor(log10(maxpower)));
 
-		//Calculate the bus types
+		// Calculate the bus types
 
-		//the presence of an external grid makes the bus VD (or slack)
+		// the presence of an external grid makes the bus VD (or slack)
 		for (uint i = 0; i < externalGrids.size(); ++i) {
 			if (buses[externalGrids[i].bus].Type == undefined_bus_type) {
 				buses[externalGrids[i].bus].Type = VD;
@@ -420,7 +385,7 @@ namespace fPotencia {
 	 * This class generates an initial estimate of the voltage angles by 
 	 * running a DC Power Flow simulation. This simulation is reduced
 	 * to the multiplication of the Z matrix of the circuit by the active 
-	 * power vector due to a number of assumntions (quite unrealistic)
+	 * power vector due to a number of assumptions (quite unrealistic)
 	 * This voltage angles solution is quite usefull to initialize the 
 	 * solution to be sent to bigger AC solvers.
 	 */
@@ -438,8 +403,6 @@ namespace fPotencia {
 
 		sol.initialized = true;
 		cx_sol.initialized = true;
-		sol.print("Initial Solution:");
-		cx_sol.print("Initial CX Solution:");
 	}
 
 	/*
@@ -464,7 +427,6 @@ namespace fPotencia {
 	 * the circuit admittance matrix
 	 */
 	void Circuit::calculate_flows(cx_solution sol_) {
-
 		for (uint i = 0; i < lines.size(); i++) {
 			lines[i].calculate_current(sol_);
 		}
@@ -486,15 +448,15 @@ namespace fPotencia {
 	 */
 	void Circuit::set_solution(cx_solution sol_) {
 
-		//Set the main circuit solution
+		// Set the main circuit solution
 		cx_sol = sol_;
 
-		//Undo the power base change
+		// Undo the power base change
 		cx_double s_base(Sbase, 0);
 		for (uint i = 0; i < sol_.Length; i++)
 			sol_.S(i) *= s_base;
 
-		//Undo the voltage change and assign the buses power and voltage
+		// Undo the voltage change and assign the buses power and voltage
 		for (uint i = 0; i < sol_.Length; i++) {
 			buses[i].voltage_pu = sol_.V.coeff(i);
 			sol_.V(i) *= cx_double(buses[i].nominal_voltage, 0);

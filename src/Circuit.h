@@ -99,65 +99,58 @@ namespace fPotencia {
 		std::vector<unsigned int> slackBusIndices;
 
 
-		/*!
-		 * \biref The voltage applyed by default to the initial solution
-		 *
+		/**
+		 * The voltage applyed by default to the initial solution.
 		 * This default voltage is a complex number and initialized to
 		 * $1 + 0j$ by the constructor.
 		 */
 		cx_double default_voltage = cx_double(1.0, 0.0);
 
 
-		/*
+		/**
 		 * Prepares the circuit for the solver.
 		 * Usually it only needs to be done once, unless the circuit topology 
 		 * changes. i.e. addition of a line
 		 */
 		void compile(bool guess_angles);
 
-		/*
+		/**
 		 * Adds a bus to the busses list.
 		 * Busses must be added like this, becouse this function asigns them a 
-		 * number
+		 * number.
 		 */
 		void add_Bus(Bus &bus);
 
-		/*
+		/**
+		 * Remove bus by object: Removes a bus from the list, but all the buses
+	 	 * indices remain the same.
 		 */
 		void remove_Bus(Bus bus);
 
-		/*
-		 */
-		void remove_Bus(std::string bus_name);
-
-		/*
-		 */
 		solution get_initial_solution();
 
-		/*
-		 */
 		cx_solution get_initial_cx_solution();
 
-		/*
-		 */
 		void set_solution(cx_solution sol);
 
-		/*Real part of Y
+		/**
+		 * Real part of Y
 		 */
 		double G(int i, int j);
 
-		/*Imaginary part of Y
+		/**
+		 * Imaginary part of Y
 		 */
 		double B(int i, int j);
 
-		/*
+		/**
 		 * Checks the correctness of the powr flow of the circuit current 
 		 * solution.
 		 * Checks the equation S= Vx(YxV)*
 		 */
 		void check_solution();
 		
-		/*
+		/**
 		 * Performs a DC power flow to calculate an initial guess of the circuit
 		 * voltage angles that remain saved at the vector 'dc_angles'
 		 */

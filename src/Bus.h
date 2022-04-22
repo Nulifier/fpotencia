@@ -21,7 +21,7 @@ namespace fPotencia {
 
 		int index = -1;
 
-		std::string Name;
+		//std::string Name;
 
 		BusType Type;
 
