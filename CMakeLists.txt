@@ -4,7 +4,7 @@ project(fPotencia VERSION 0.8 LANGUAGES CXX)
 include(FindDoxygen)
 include(GNUInstallDirs)
 
-option(USE_OPENMP "Include support for parallelization through OpenMP" ON)
+option(USE_OPENMP "Include support for parallelization through OpenMP" OFF)
 
 option(BUILD_PROFILE "Build the profile for fPotencia" OFF)
 
