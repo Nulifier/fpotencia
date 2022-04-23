@@ -23,7 +23,7 @@ namespace fPotencia {
 
 		void calculate_current(cx_solution sol);
 
-		void print();
+		void print() const;
 
 		/*************************************************************************
 		 * Properties

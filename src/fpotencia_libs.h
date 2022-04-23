@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   fpotencia_libs.h
  * Author: Santiago Peñate Vera
  *
@@ -9,44 +9,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+#pragma once
 
-#include <iostream>
 #include <ctime>
+#include <iostream>
 
-//EIGEN
+// EIGEN
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <Eigen/LU>
+#include <Eigen/Sparse>
 
-//General math
-#include <complex>
+// General math
 #include <cmath>
+#include <complex>
 #include <numbers>
 
-//Aseritions library
-#include <assert.h> 
+// Assertion library
+#include <cassert>
 
 #include "enumaratons.h"
 
-typedef std::complex<double> cx_double;
+namespace fPotencia {
+	using cx_double = std::complex<double>;
 
-typedef Eigen::MatrixXd mat;
-typedef Eigen::VectorXd vec;
+	using mat = Eigen::MatrixXd;
+	using vec = Eigen::VectorXd;
 
-typedef Eigen::VectorXcd cx_vec;
-typedef Eigen::MatrixXcd cx_mat;
+	using cx_vec = Eigen::VectorXcd;
+	using cx_mat = Eigen::MatrixXcd;
 
-typedef Eigen::Matrix3cd cx_mat3; // 3x3 complex matrix
+	using cx_mat3 = Eigen::Matrix3cd; // 3x3 complex matrix
 
-typedef Eigen::SparseMatrix<std::complex<double>,Eigen::RowMajor> sp_cx_mat;
-typedef Eigen::SparseMatrix<double> sp_mat;
-typedef Eigen::SparseVector<double>  sp_vec;
+	using sp_cx_mat =
+	    Eigen::SparseMatrix<std::complex<double>, Eigen::RowMajor>;
+	using sp_mat = Eigen::SparseMatrix<double>;
+	using sp_vec = Eigen::SparseVector<double>;
 
-typedef Eigen::DiagonalMatrix<std::complex<double>,Eigen::Dynamic> cx_diag_mat;
+	using cx_diag_mat =
+	    Eigen::DiagonalMatrix<std::complex<double>, Eigen::Dynamic>;
 
-
-typedef unsigned int uint;
-
-
-/* FPOTENCIA_LIBS_H */
+	using uint = unsigned int;
+}

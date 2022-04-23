@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Load.cpp
  * Author: Santiago Peñate Vera
- * 
+ *
  * Created on 6 de agosto de 2014, 10:05
  * Copyright (C) 2014 Santiago Peñate Vera
  *
@@ -13,9 +13,9 @@
 #include "Load.h"
 
 namespace fPotencia {
-	Load::Load(std::string name, int connection_bus, double P, double Q) {
-		Name = name;
-		bus = connection_bus;
+	Load::Load(const std::string& name, int connection_bus, double P, double Q)
+	    : Name(name), bus(connection_bus) {
+
 		power = cx_double(P, Q);
 	}
 }

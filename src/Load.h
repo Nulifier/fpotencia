@@ -17,7 +17,7 @@ namespace fPotencia {
 	/** A load connected to a bus */
 	class Load final {
 	public:
-		Load(std::string name, int connection_bus, double P, double Q);
+		Load(const std::string& name, int connection_bus, double P, double Q);
 
 		std::string Name;
 

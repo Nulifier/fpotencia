@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Generator.h
  * Author: Santiago Peñate Vera
  *
@@ -17,10 +17,12 @@ namespace fPotencia {
 	class Generator {
 	public:
 		/** Constructor for non-voltage controlled generators. */
-		Generator(std::string name, uint connection_bus, double P, double Q);
+		Generator(const std::string& name, uint connection_bus, double P,
+		          double Q);
 
 		/** Constructor for voltage controlled generators. */
-		Generator(std::string name, uint connection_bus, double P, double Vset, double Qmin, double Qmax, bool Vset_per_unit);
+		Generator(const std::string& name, uint connection_bus, double P,
+		          double Vset, double Qmin, double Qmax, bool Vset_per_unit);
 
 		std::string Name;
 
@@ -35,7 +37,7 @@ namespace fPotencia {
 
 		double voltage_set_point;
 
-		bool voltage_controlled = false;
+		bool voltage_controlled;
 
 		bool Vset_in_per_unit = false;
 	};

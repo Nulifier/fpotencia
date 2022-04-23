@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Line.h
  * Author: Santiago Peñate Vera
  *
@@ -24,7 +24,8 @@ namespace fPotencia {
 		 * @param x The reactance per distance unit.
 		 * @param b The susceptance per distance unit.
 		 */
-		LineType(const std::string& name, double r, double x, double b, bool per_unit_values);
+		LineType(const std::string& name, double r, double x, double b,
+		         bool per_unit_values);
 
 		std::string Name;
 
@@ -37,9 +38,10 @@ namespace fPotencia {
 
 	class Line final {
 	public:
-		Line(const std::string& name, int connection_bus1, int connection_bus2, LineType line_type, double line_length);
+		Line(const std::string& name, int connection_bus1, int connection_bus2,
+		     const LineType& line_type, double line_length);
 
-		void SetType(LineType line_type);
+		void SetType(const LineType& line_type);
 
 		std::string Name;
 
@@ -58,16 +60,16 @@ namespace fPotencia {
 		 * Returns the component admittance matrix in sparse format, this way
 		 * the composition of the circuit admittance matrix is straight forward
 		 */
-		void get_element_Y(int n, sp_cx_mat &Yret);
+		void get_element_Y(int n, sp_cx_mat& Yret);
 
 		/**
 		 * This function calculates the amount of current going through the line
-	 	 * given a circuit solution
-	 	 */
+		 * given a circuit solution
+		 */
 		void calculate_current(cx_solution sol);
 
 		/** Prints all the calculated line parameters. */
-		void print();
+		void print() const;
 
 		/*************************************************************************
 		 * Calculated variables: Results
@@ -86,7 +88,6 @@ namespace fPotencia {
 		double Zbase;
 
 	private:
-
 		cx_double impedance;
 
 		cx_double shunt_admittance;
@@ -94,6 +95,6 @@ namespace fPotencia {
 		/*************************************************************************
 		 * Calculated variables: Results
 		 *************************************************************************/
-		cx_mat Y_element; //calculated element admittance matrix (2x2)
+		cx_mat Y_element; // calculated element admittance matrix (2x2)
 	};
 }

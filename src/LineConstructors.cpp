@@ -26,9 +26,6 @@ namespace fPotencia {
 		recalculateConstants();
 	}
 
-	CarsonEquations::~CarsonEquations() {
-	}
-
 	/*
 	 */
 	void CarsonEquations::recalculateConstants() {
@@ -195,9 +192,6 @@ namespace fPotencia {
 			C_shunt[i] = cx_double(0.0, 0.0);
 		}
 
-	}
-
-	UndergroundLine::~UndergroundLine() {
 	}
 
 	void UndergroundLine::addCable(UndergroundCable cbl, ConnectionPhase phase, double x, double y) {

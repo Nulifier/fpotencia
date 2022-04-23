@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#include <array>
+
 #define PI 3.1415926535897932384626433832795
 
 //Define unit conversions
@@ -32,7 +34,7 @@ namespace fPotencia {
 		Not_Solvable_with_Method
 	};
 
-	enum BusType {
+	enum class BusType {
 		PQ,
 		PV,
 		VD, //Same as slack 
@@ -78,7 +80,7 @@ namespace fPotencia {
 		Metric //metric system compatible m, km, etc.
 	};
 
-	static const char * BusType_name[] = {
+	static constexpr std::array<const char*, 4> BusType_name = {
 		"PQ",
 		"PV",
 		"VD",
