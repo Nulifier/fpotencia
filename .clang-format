@@ -1,0 +1,11 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+---
+Language: Cpp
+UseTab: ForIndentation
+FixNamespaceComments: false
+NamespaceIndentation: All
+AccessModifierOffset: -4
+---

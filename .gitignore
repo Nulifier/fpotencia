@@ -34,3 +34,5 @@ build/
 # Editor files:
 *~
 .*.sw?
+
+.cache/
