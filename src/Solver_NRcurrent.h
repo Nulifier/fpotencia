@@ -42,7 +42,7 @@ namespace fPotencia {
 
 		unsigned int maxIterations = 2;
 
-		Result solve() override;
+		Result solve(bool printIterations = false) override;
 
 		bool canSolve() const override;
 

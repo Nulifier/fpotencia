@@ -52,8 +52,8 @@ namespace fPotencia {
 		Qesp = vec(Model.buses.size());
 
 		for (uint k : PQPV) {
-			Pesp(k) = Sol.Pi(k); //P at PQ and PV buses
-			Qesp(k) = Sol.Qi(k); //Q at PQ buses
+			Pesp(k) = Sol.Pr(k); //P at PQ and PV buses
+			Qesp(k) = Sol.Pi(k); //Q at PQ buses
 		}
 
 	}
@@ -100,14 +100,14 @@ namespace fPotencia {
 	void NRcurrentSolver::abcd(uint k, cx_solution &sol, double &a, double &b, double &c, double &d) {
 		double V4 = pow(sol.Vr(k), 4) + pow(sol.Vi(k), 4);
 
-		a = (sol.Qi(k) * (sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k))
-				- 2.0 * sol.Vr(k) * sol.Vi(k) * sol.Pi(k))
+		a = (sol.Pi(k) * (sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k))
+				- 2.0 * sol.Vr(k) * sol.Vi(k) * sol.Pr(k))
 				/ V4;
 
 		d = a;
 
-		b = (sol.Pi(k) * (sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k))
-				+ 2.0 * sol.Vr(k) * sol.Vi(k) * sol.Qi(k))
+		b = (sol.Pr(k) * (sol.Vr(k) * sol.Vr(k) - sol.Vi(k) * sol.Vi(k))
+				+ 2.0 * sol.Vr(k) * sol.Vi(k) * sol.Pi(k))
 				/ V4;
 		c = -b;
 	}
@@ -125,12 +125,12 @@ namespace fPotencia {
 
 		//W
 		uint a = 0;
-		uint b, k, i;
+		uint k, i;
 		double ak, bk, ck, dk, Vk2, B1, B2, G1, G2;
 		cx_double ZERO(0.0, 0.0);
 
 		for (uint x = 0; x < N; x++) { //rows
-			b = 0;
+			unsigned int b = 0;
 			k = PQPV[x];
 			for (uint y = 0; y < N; y++) { //cols
 				i = PQPV[y];
@@ -224,22 +224,22 @@ namespace fPotencia {
 				//x[a] -> inc Vi
 				//x[a+1] -> inc Q                
 				sol.V(k) = cx_double(sol.Vr(k), sol.Vi(k) + x.coeff(a));
-				sol.S(k) = cx_double(sol.Pi(k), sol.Qi(k) + x.coeff(a + 1));
+				sol.S(k) = cx_double(sol.Pr(k), sol.Pi(k) + x.coeff(a + 1));
 
 				//PQ PV controller
-				if (sol.Qi(k) < Model.buses[k].min_q) {
+				if (sol.Pi(k) < Model.buses[k].min_q) {
 
-					std::cout << "PV-> PQ Bus " << k << ":: Q=" << sol.Qi(k) << ", qmin:" << Model.buses[k].min_q << ", qmax:" << Model.buses[k].max_q << std::endl;
-
-					Model.buses[k].Type = BusType::PQ;
-					sol.S(k) = cx_double(sol.Pi(k), Model.buses[k].min_q);
-
-				} else if (sol.Qi(k) > Model.buses[k].max_q) {
-
-					std::cout << "PV-> PQ Bus " << k << ":: Q=" << sol.Qi(k) << ", qmin:" << Model.buses[k].min_q << ", qmax:" << Model.buses[k].max_q << std::endl;
+					std::cout << "PV-> PQ Bus " << k << ":: Q=" << sol.Pi(k) << ", qmin:" << Model.buses[k].min_q << ", qmax:" << Model.buses[k].max_q << std::endl;
 
 					Model.buses[k].Type = BusType::PQ;
-					sol.S(k) = cx_double(sol.Pi(k), Model.buses[k].max_q);
+					sol.S(k) = cx_double(sol.Pr(k), Model.buses[k].min_q);
+
+				} else if (sol.Pi(k) > Model.buses[k].max_q) {
+
+					std::cout << "PV-> PQ Bus " << k << ":: Q=" << sol.Pi(k) << ", qmin:" << Model.buses[k].min_q << ", qmax:" << Model.buses[k].max_q << std::endl;
+
+					Model.buses[k].Type = BusType::PQ;
+					sol.S(k) = cx_double(sol.Pr(k), Model.buses[k].max_q);
 				}
 			}
 
@@ -258,7 +258,7 @@ namespace fPotencia {
 		}
 	}
 
-	Solver::Result NRcurrentSolver::solve() {
+	Solver::Result NRcurrentSolver::solve(bool printIterations) {
 		uint npv = Model.generatorBusIndices.size();
 		uint npq = Model.loadBusIndices.size();
 		uint N = npq + npv;
@@ -298,6 +298,10 @@ namespace fPotencia {
 
 			//check convergence
 			didConverge = converged(incY, Nj);
+
+			if (printIterations) {
+				std::cout << "Iteration " << i << std::endl;
+			}
 		}
 
 		if (didConverge) {

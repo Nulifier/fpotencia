@@ -80,7 +80,7 @@ namespace fPotencia {
 		 *
 		 * \sa Solver_State
 		 */
-		Solver::Result solve() override;
+		Solver::Result solve(bool printIterations = false) override;
 
 		bool canSolve() const override;
 

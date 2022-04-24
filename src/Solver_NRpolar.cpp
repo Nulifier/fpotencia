@@ -396,7 +396,7 @@ namespace fPotencia {
 	}
 
 
-	Solver::Result NRpolarSolver::solve() {
+	Solver::Result NRpolarSolver::solve(bool printIterations) {
 		uint npq = Model.loadBusIndices.size();
 		uint npv = Model.generatorBusIndices.size();
 		uint npqpvpq = 2 * npq + npv;
@@ -432,7 +432,9 @@ namespace fPotencia {
 
 			didConverge = converged(K, npqpvpq);
 
-			//std::cout << "Iteration " << i << std::endl;
+			if (printIterations) {
+				std::cout << "Iteration " << i << std::endl;
+			}
 		}
 		
 		//Calculate the reactive power for the PV buses:

@@ -14,7 +14,7 @@ int main() {
 	solver.maxIterations = 20;
 	solver.tolerance = 1e-6;
 
-	auto result = solver.solve();
+	auto result = solver.solve(true);
 
 	const auto end = std::chrono::high_resolution_clock::now();
 

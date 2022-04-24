@@ -49,7 +49,7 @@ namespace fPotencia {
 		 *
 		 * \sa Solver::Result
 		 */
-		virtual Result solve() = 0;
+		virtual Result solve(bool printIterations = false) = 0;
 
 		/**
 		 * Checks if this solver can solve this model.
