@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Solution.cpp
  * Author: Santiago Peñate Vera
- * 
+ *
  * Created on 8 de agosto de 2014, 10:43
  * Copyright (C) 2014 Santiago Peñate Vera
  *
@@ -155,7 +155,6 @@ namespace fPotencia {
 		V = cx_vec(n);
 		S.setZero(n);
 		V.setZero(n);
-		Length = n;
 	}
 
 	/*

@@ -27,9 +27,7 @@ namespace fPotencia {
 
 		bool initialized = false;
 
-		uint Length;
-
-		void copy_from(cx_solution orig);
+		[[nodiscard]] unsigned int length() const { return S.size(); }
 
 		void resize(int n);
 
