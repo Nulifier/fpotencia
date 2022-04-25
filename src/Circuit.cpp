@@ -349,17 +349,17 @@ namespace fPotencia {
 				sol.P(i) = buses[i].connected_power.real() / Sbase;
 				sol.Q(i) = buses[i].connected_power.imag() / Sbase;
 				if (!keep_last_solution) {
-					sol.V(i) = default_voltage.real();
-					sol.D(i) = default_voltage.imag();
+					sol.Vmag(i) = default_voltage.real();
+					sol.Varg(i) = default_voltage.imag();
 				}
 			}
 			else if (buses[i].Type == BusType::PV) {
 
 				sol.P(i) = buses[i].connected_power.real() / Sbase;
-				sol.V(i) = default_voltage.real();
+				sol.Vmag(i) = default_voltage.real();
 				if (!keep_last_solution) {
 					sol.Q(i) = buses[i].connected_power.imag() / Sbase;
-					sol.D(i) = default_voltage.imag();
+					sol.Varg(i) = default_voltage.imag();
 				}
 			}
 			else if (buses[i].Type == BusType::VD) {
@@ -367,12 +367,12 @@ namespace fPotencia {
 				// the same voltage refference for the solvers
 				sol.P(i) = 0.0;
 				sol.Q(i) = 0.0;
-				sol.V(i) = default_voltage.real();
-				sol.D(i) = default_voltage.imag();
+				sol.Vmag(i) = default_voltage.real();
+				sol.Varg(i) = default_voltage.imag();
 			}
 
 			cx_sol.S(i) = cx_double(sol.P[i], sol.Q[i]);
-			cx_sol.V(i) = cx_double(sol.V[i], sol.D[i]);
+			cx_sol.V(i) = cx_double(sol.Vmag[i], sol.Varg[i]);
 		}
 
 		sol.initialized = true;
@@ -392,9 +392,9 @@ namespace fPotencia {
 		dc_angles = Zred().imag() * cx_sol.P();
 
 		for (uint i = 0; i < buses.size(); i++) {
-			sol.D(i) = dc_angles(i);
+			sol.Varg(i) = dc_angles(i);
 
-			cx_sol.V(i) = cx_double(sol.V[i], sol.D[i]);
+			cx_sol.V(i) = cx_double(sol.Vmag[i], sol.Varg[i]);
 		}
 
 		sol.initialized = true;
@@ -459,8 +459,8 @@ namespace fPotencia {
 			// copy cx_sol to sol
 			sol.P(i) = cx_sol.S.coeff(i).real();
 			sol.Q(i) = cx_sol.S.coeff(i).imag();
-			sol.V(i) = abs(cx_sol.V(i));
-			sol.D(i) = arg(cx_sol.V(i));
+			sol.Vmag(i) = abs(cx_sol.V(i));
+			sol.Varg(i) = arg(cx_sol.V(i));
 		}
 
 		calculate_flows(sol_);

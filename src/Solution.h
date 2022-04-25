@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Solution.h
  * Author: Santiago Peñate Vera
  *
@@ -14,50 +14,54 @@
 #include "fpotencia_libs.h"
 
 namespace fPotencia {
-	/*
-	 * This solution object with complex vectors is suited for methods like Jacobi
-	 * or Gauss-Seidel
+	/**
+	 * Complex voltage and power solution.
+	 * This implementation of the solution object contains both voltage and
+	 * power in complex mode. This is the solution "shape" that suits best
+	 * algorithms like gauss-seidel or jacobi.
 	 */
 	class cx_solution final {
 	public:
-		/*Properties*/
+		/// Complex power at each bus.
 		cx_vec S;
 
+		/// Complex voltage at each bus.
 		cx_vec V;
+
+		/// Get the active power.
+		[[nodiscard]] vec P() const { return S.real(); }
+
+		/// Get the reactive power.
+		[[nodiscard]] vec Q() const { return S.imag(); }
 
 		bool initialized = false;
 
 		[[nodiscard]] unsigned int length() const { return S.size(); }
 
-		void resize(int n);
+		/// Resizes the solution object and initializes it to zero.
+		void resize(unsigned int n);
 
-		void print(const std::string& title);
-
-		cx_vec getS();
-
-		cx_vec getV();
+		/// Print the solution values.
+		void print(const std::string& title) const;
 		
-		vec P();
-		
-		vec Q();
-		
-		double Pi(uint k);
-		
-		double Qi(uint k);
+		/// Active power of the bus at index k.
+		[[nodiscard]] double Pr(uint k) const { return S.coeff(k).real(); }
 
-		double Vi(uint k);
+		/// Reactive power of the bus at index k.
+		[[nodiscard]] double Pi(uint k) const { return S.coeff(k).imag(); }
 
-		double Vr(uint k);
+		/// Real voltage of the bus at index k.
+		[[nodiscard]] double Vr(uint k) const { return V.coeff(k).real(); }
 
-		mat getP();
-
-	private:
-
+		/// Imaginary voltage of the bus at index k.
+		[[nodiscard]] double Vi(uint k) const { return V.coeff(k).imag(); }
 	};
 
-	/*
-	 * This type of separated vectors solution is good for solvers of the
-	 * Newton-Raphson type.
+	/**
+	 * Complex power and polar voltage solution.
+	 * This is the implementation of the solution object with voltage in polar
+	 * form. This way of representation of the voltage is usefull for the Newton
+	 * -Raphson algorithm, in order to better represent the PV buses constraint.
 	 */
 	class solution final {
 	public:
@@ -65,30 +69,39 @@ namespace fPotencia {
 
 		vec Q;
 
-		vec V;
+		vec Vmag;
 
-		vec D;
+		vec Varg;
+
+		/// Complex power at each bus.
+		[[nodiscard]] cx_vec S() const { cx_vec T(length()); T.real() = P; T.imag() = Q; return T; }
+		
+		/// Complex power of the bus at index k.
+		[[nodiscard]] cx_double S(uint k) const { return {P.coeff(k), Q.coeff(k)}; }
+
+		/// Complex voltage at each bus.
+		[[nodiscard]] cx_vec V() const;
+
+		/// Complex voltage of the bus at index k.
+		[[nodiscard]] cx_double V(uint k) const { return std::polar(Vmag.coeff(k), Varg.coeff(k)); }
 
 		bool initialized = false;
 
-		uint Length;
+		[[nodiscard]] unsigned int length() const { return P.size(); }
 
-		void copy_from(solution orig);
+		/// Resizes the solution object and initializes it to zero.
+		void resize(unsigned int n);
 
-		void resize(int n);
-		
-		void clear();
+		/// Print the solution values.
+		void print(const std::string& title) const;
 
-		void print(const std::string& title);
+		/// Real voltage of the bus at index k.
+		[[nodiscard]] double Vr(uint k) const { return Vmag.coeff(k) * std::cos(Varg.coeff(k)); }
 
-		double Vi(uint k);
+		/// Imaginary voltage of the bus at index k.
+		[[nodiscard]] double Vi(uint k) const { return Vmag.coeff(k) * std::sin(Varg.coeff(k)); }
 
-		double Vr(uint k);
-
-		cx_double Vcx(uint k);
-
-		cx_double Scx(uint k);
-
-		cx_solution get_cx();
+		/// Convert to rectangular solution.
+		[[nodiscard]] cx_solution toComplex() const;
 	};
 }

@@ -69,9 +69,9 @@ namespace fPotencia {
 		for (unsigned int k: Model.slackBusIndices) {
 			cx_double I(0.0, 0.0);
 			for (uint j = 0; j < Model.buses.size(); j++) {
-				I += Model.Y.coeff(k, j) * Sol.Vcx(j);
+				I += Model.Y.coeff(k, j) * Sol.V(j);
 			}
-			I = Sol.Vcx(k) * conj(I); //now this is the power
+			I = Sol.V(k) * conj(I); //now this is the power
 			Sol.P(k) = I.real();
 			Sol.Q(k) = I.imag();
 		}
@@ -90,21 +90,21 @@ namespace fPotencia {
 	double NRpolarSolver::P(uint k) {
 		double val = 0.0;
 		for (uint j = 0; j < Model.buses.size(); j++) {
-			val += Sol.V.coeff(j)
-					*(Model.G(k, j) * cos(Sol.D.coeff(k) - Sol.D.coeff(j))
-					+ Model.B(k, j) * sin(Sol.D.coeff(k) - Sol.D.coeff(j)));
+			val += Sol.Vmag.coeff(j)
+					*(Model.G(k, j) * cos(Sol.Varg.coeff(k) - Sol.Varg.coeff(j))
+					+ Model.B(k, j) * sin(Sol.Varg.coeff(k) - Sol.Varg.coeff(j)));
 		}
-		return Sol.V.coeff(k) * val;
+		return Sol.Vmag.coeff(k) * val;
 	}
 
 	double NRpolarSolver::Q(uint k) {
 		double val = 0.0;
 		for (uint j = 0; j < Model.buses.size(); j++) {
-			val += Sol.V.coeff(j)
-					*(Model.G(k, j) * sin(Sol.D.coeff(k) - Sol.D.coeff(j))
-					- Model.B(k, j) * cos(Sol.D.coeff(k) - Sol.D.coeff(j)));
+			val += Sol.Vmag.coeff(j)
+					*(Model.G(k, j) * sin(Sol.Varg.coeff(k) - Sol.Varg.coeff(j))
+					- Model.B(k, j) * cos(Sol.Varg.coeff(k) - Sol.Varg.coeff(j)));
 		}
-		return Sol.V.coeff(k) * val;
+		return Sol.Vmag.coeff(k) * val;
 	}
 
 	void NRpolarSolver::correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X) {
@@ -187,8 +187,8 @@ namespace fPotencia {
 				if (b != a) {
 					j = PQPV[b];
 					val = V.coeff(k) * V.coeff(j)
-							*(Model.G(k, j) * cos(Sol.D.coeff(k) - Sol.D.coeff(j))
-							+ Model.B(k, j) * sin(Sol.D.coeff(k) - Sol.D.coeff(j)));
+							*(Model.G(k, j) * cos(Sol.Varg.coeff(k) - Sol.Varg.coeff(j))
+							+ Model.B(k, j) * sin(Sol.Varg.coeff(k) - Sol.Varg.coeff(j)));
 					J(a + da, b + db) = val;
 				}
 			}
@@ -378,20 +378,20 @@ namespace fPotencia {
 
 		for (uint a = 0; a < npqpv; a++) {
 			k = PQPV[a];
-			Sol.D(k) += X.coeff(a);
+			Sol.Varg(k) += X.coeff(a);
 
 			if (a < npq) {
-				Sol.V(k) = Sol.V.coeff(k) * (1.0 + X.coeff(a + npqpv));
+				Sol.Vmag(k) = Sol.Vmag.coeff(k) * (1.0 + X.coeff(a + npqpv));
 			}
 		}
 
 		// Correct for PV buses
 		for (uint i = npq; i < npq + npv; i++) {
 			k = PQPV[i];
-			cx_double v = Sol.Vcx(k);
+			cx_double v = Sol.V(k);
 			v *= Model.buses[k].v_set_point / abs(v);
-			Sol.V(k) = abs(v);
-			Sol.D(k) = arg(v);
+			Sol.Vmag(k) = abs(v);
+			Sol.Varg(k) = arg(v);
 		}
 	}
 
@@ -406,8 +406,8 @@ namespace fPotencia {
 		mat J2(npqpvpq, npqpvpq);
 		vec K(npqpvpq);
 		vec X(npqpvpq);
-		vec incV(Sol.Length);
-		vec incD(Sol.Length);
+		vec incV(Sol.length());
+		vec incD(Sol.length());
 		
 		// First shot: Perhaps the model already converged?
 
@@ -415,7 +415,7 @@ namespace fPotencia {
 		bool didConverge = converged(K, npqpvpq);
 
 		for (unsigned int i = 0; (i < maxIterations) && !didConverge; ++i) {
-			Jacobian(J, Sol.V, Sol.D, npq, npv);
+			Jacobian(J, Sol.Vmag, Sol.Varg, npq, npv);
 
 			Eigen::FullPivLU<mat> lu(J); //Full pivot LU
 			X = lu.solve(K);
@@ -442,7 +442,7 @@ namespace fPotencia {
 
 		if (didConverge) {
 			calculate_slack_power();
-			Model.set_solution(Sol.get_cx());
+			Model.set_solution(Sol.toComplex());
 			return Solver::Solved;
 		}
 		else {
