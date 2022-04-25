@@ -19,4 +19,6 @@ int main() {
 	const auto end = std::chrono::high_resolution_clock::now();
 
 	std::cout << "System did " << (result != fPotencia::Solver::Result::Solved ? "not " : "") << "converge in " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
+
+	// Current record in release: 224ms
 }

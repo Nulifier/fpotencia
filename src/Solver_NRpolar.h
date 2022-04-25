@@ -82,7 +82,7 @@ namespace fPotencia {
 		 */
 		Solver::Result solve(bool printIterations = false) override;
 
-		bool canSolve() const override;
+		[[nodiscard]] bool canSolve() const override;
 
 		void update_solution_power_from_circuit();
 		
@@ -105,9 +105,9 @@ namespace fPotencia {
 		solution Sol;
 
 		/// Calculate the Jacobian of the circuit.
-		void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv); //calculate the jacobian, J is passed by refference
+		void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv);
 		
-		double mu(mat &J, mat &J2, vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
+		double mu(const mat &J, mat &J2, const vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
 
 		/// Calculate the power increments.
 		void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
@@ -120,8 +120,6 @@ namespace fPotencia {
 
 		/// Calculate the reactive power at a bus.
 		double Q(uint k);
-
-		
 
 		void update_solution(vec X, uint npq, uint npv);
 		

@@ -11,60 +11,68 @@
  */
 #pragma once
 
-#include <math.h>
-#include "fpotencia_libs.h"
-#include "Solution.h"
 #include "Bus.h"
+#include "Solution.h"
+#include "fpotencia_libs.h"
+#include <math.h>
 
 namespace fPotencia {
-	/*******************************************************************************
-	 *TransformerType class definition
-	 ******************************************************************************/
+	/**
+	 * Represents the parameters of a type of transformer.
+	 * @note All values are per unit.
+	 */
 	class TransformerType final {
 	public:
-
-		TransformerType(std::string name, cx_double leakage_z, cx_double magnetizing_z);
+		TransformerType(std::string name, cx_double leakage_z,
+		                cx_double magnetizing_z);
 
 		/*
 		 * Name: Name of the type
-		 * Yabc: Transformer admittance matrix -> can be created with 
+		 * Yabc: Transformer admittance matrix -> can be created with
 		 *       TransformerConstructors.h
 		 */
 		TransformerType(std::string name, cx_mat Yabc);
 
-		// Type name    
+		// Type name
 		std::string Name;
 
-		// Tap position [Value arround 1]    
+		// Tap position [Value arround 1]
 		double tap = 1.0;
 
-		double phase_shift = PI / 6.0; // 30 deg by default (always in radians; 30 deg = pi/6 rad)
+		/// 30 deg by default (always in radians; 30 deg = pi/6 rad)
+		double phase_shift = PI / 6.0;
 
-		//Calculated parameters in per unit values
-		cx_double leakage_impedance; //r + j*x
+		// Calculated parameters in per unit values
+		cx_double leakage_impedance; // r + j*x
 
-		cx_double magnetizing_impedance; //rfe + j*xm
+		cx_double magnetizing_impedance; // rfe + j*xm
 	};
 
-	/*******************************************************************************
-	 *Transformer class definition
-	 ******************************************************************************/
-	class Transformer {
+	class Transformer final {
 	public:
+		Transformer(std::string name, int connection_busHV,
+		            int connection_busLV,
+		            const TransformerType& transformer_type);
 
-		Transformer(std::string name, int connection_busHV, int connection_busLV, TransformerType transformer_type);
+		/**
+		 * Calculates the transformer impedance and admittance from a
+		 * transformer type model and generates the transformer admmitance
+		 * matrix.
+		 */
+		void SetType(const TransformerType& transformer_type);
 
-		virtual ~Transformer();
+		void get_element_Y(int n, sp_cx_mat& Yret);
 
-		void SetType(TransformerType transformer_type);
-
-		void get_element_Y(int n, sp_cx_mat &Yret);
-
+		/**
+		 * Calculate the current and power flows through the transformer given a
+		 * solution.
+		 */
 		void calculate_current(cx_solution sol);
 
-		void print();
+		/// Prints all the calculated values of the transformer.
+		void print() const;
 
-		//properties
+		// properties
 		std::string Name;
 
 		int HV_bus_index = 0;
@@ -86,14 +94,13 @@ namespace fPotencia {
 		cx_double power_losses;
 
 	private:
-
 		double tap;
 
 		double pha_shift;
 
-		cx_double leakage_impedance; //r + j*x
+		cx_double leakage_impedance; // r + j*x
 
-		cx_double magnetizing_impedance; //rfe + j*xm
+		cx_double magnetizing_impedance; // rfe + j*xm
 
 		/*************************************************************************
 		 * Calculated variables: Results
