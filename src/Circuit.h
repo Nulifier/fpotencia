@@ -37,17 +37,10 @@ namespace fPotencia {
 		using Shunts = std::vector<Shunt>;
 		using ExternalGrids = std::vector<ExternalGrid>;
 
-		/**
-		 * Addmitance matrix.
-		 * @sa #compile()
-		 */
+		/// Addmitance matrix.
 		sp_cx_mat Y;
 
-		/*!
-		 * \brief Full impedance matrix
-		 *
-		 * \sa #compile()
-		 */
+		/// Full impedance matrix
 		const cx_mat& Z() {
 			if (!m_Z) {
 				compose_Z();
@@ -55,11 +48,7 @@ namespace fPotencia {
 			return *m_Z;
 		}
 
-		/*!
-		 * \brief Reduced circuit impedance matrix, excluding the slack bus
-		 *
-		 * \sa #compile()
-		 */
+		/// Reduced circuit impedance matrix, excluding the slack bus.
 		const cx_mat& Zred() {
 			if (!m_Zred) {
 				compose_Zred();
@@ -67,34 +56,34 @@ namespace fPotencia {
 			return *m_Zred;
 		};
 
-		//! \brief Buses contained in the grid
+		/// Buses contained in the grid
 		Buses buses;
 
-		//! \brief All loads in the grid
+		/// All loads in the grid
 		Loads loads;
 
-		//! \brief All generators connected to the grid
+		/// All generators connected to the grid
 		Generators generators;
 
-		//! \brief All lines in the grid
+		/// All lines in the grid
 		Lines lines;
 
-		//! \brief All transformers in the grid
+		/// All transformers in the grid
 		Transformers transformers;
 
-		//! \brief All shunts present in the grid
+		/// All shunts present in the grid
 		Shunts shunts;
 
-		//! \brief References external grids connected to this one
+		/// References external grids connected to this one
 		ExternalGrids externalGrids;
 
-		//! \brief Indices of PQ (load) buses
+		/// Indices of PQ (load) buses
 		std::vector<unsigned int> loadBusIndices;
 
-		//! \brief Indices of PV (generator) buses
+		/// Indices of PV (generator) buses
 		std::vector<unsigned int> generatorBusIndices;
 
-		//! \brief Indicies of VD (slack) bus(es)
+		/// Indicies of VD (slack) bus(es)
 		std::vector<unsigned int> slackBusIndices;
 
 		/**
@@ -130,15 +119,11 @@ namespace fPotencia {
 
 		void set_solution(cx_solution sol);
 
-		/**
-		 * Real part of Y
-		 */
-		double G(int i, int j) const;
+		/// Gets the real part of a Y element.
+		[[nodiscard]] double G(int i, int j) const { return Y.coeff(i, j).real(); }
 
-		/**
-		 * Imaginary part of Y
-		 */
-		double B(int i, int j) const;
+		/// Gets the imaginary part of a Y element.
+		[[nodiscard]] double B(int i, int j) const { return Y.coeff(i, j).imag(); }
 
 		/**
 		 * Checks the correctness of the powr flow of the circuit current
@@ -153,22 +138,20 @@ namespace fPotencia {
 		 */
 		void correct_initial_solution();
 
-		/*
-		 * Prints in the console the circuit solution
-		 */
-		void print();
+		/// Print circuit power flows and voltages.
+		void print() const;
 
 		void print_buses_state();
 
-		/*
+		/**
 		 * Print complex matrix
 		 */
-		void printCXMat(cx_mat m, const std::string& header) const;
+		void printCXMat(const cx_mat& m, const std::string& header) const;
 
-		/*
+		/**
 		 * Print sparse matrix
 		 */
-		void printMat(sp_mat m, const std::string& header) const;
+		void printMat(const sp_mat& m, const std::string& header) const;
 
 		/* This function sets the load and generation power values (in actual
 		 * values not in p.u) and updates the solution objects, keeping the
@@ -204,10 +187,8 @@ namespace fPotencia {
 		 */
 		void generate_initial_solution(bool keep_last_solution = false);
 
-		/*
-		 * Returns the maximum power in abslute value connected to a bus bar
-		 */
-		double get_max_power();
+		/// Returns the magnitude of the maximum power of any bus bar.
+		[[nodiscard]] double get_max_power() const;
 
 		/*
 		 * Calculates the current and power flows on the branch elements given

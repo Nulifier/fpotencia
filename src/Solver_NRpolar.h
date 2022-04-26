@@ -13,15 +13,16 @@
 
 #include <cmath>
 
-#include "Solver.h"
 #include "Circuit.h"
 #include "Solution.h"
+#include "Solver.h"
 
 namespace fPotencia {
 	/**
-	 * This class implements the Newton-Raphson method of load flow analysis using polar coordinates.
+	 * This class implements the Newton-Raphson method of load flow analysis
+	 * using polar coordinates.
 	 */
-	class NRpolarSolver: public Solver {
+	class NRpolarSolver : public Solver {
 	public:
 		/**
 		 * Creates a new Solver.
@@ -63,36 +64,26 @@ namespace fPotencia {
 		 *
 		 * Provides the real solution using the Newton-Raphson technique
 		 */
-		double solve3rdDegreePolynomial(
-				double d,
-				double c,
-				double b,
-				double a,
-				double x) const;
+		[[nodiscard]] double solve3rdDegreePolynomial(double d, double c,
+		                                              double b, double a,
+		                                              double x) const;
 
 		/// Checks whether a particular solution converged.
-		bool converged(vec const& PQinc, uint npqpvpq) const;
+		[[nodiscard]] bool converged(vec const& PQinc, uint npqpvpq) const;
 
-		/*!
-		 * \brief Solves the grid
-		 *
-		 * \return Solver_State::converged if the grid was solved
-		 *
-		 * \sa Solver_State
-		 */
 		Solver::Result solve(bool printIterations = false) override;
 
 		[[nodiscard]] bool canSolve() const override;
 
 		void update_solution_power_from_circuit();
-		
+
 	private:
 		/// Vector of indices of the pq and pv busses.
 		std::vector<int> PQPV;
 
 		/// List of PQ bus indices in the previous iteration.
 		std::vector<int> LastPQ;
-		
+
 		/// List of PV bus indices in the previous iteration.
 		std::vector<int> LastPV;
 
@@ -105,30 +96,34 @@ namespace fPotencia {
 		solution Sol;
 
 		/// Calculate the Jacobian of the circuit.
-		void Jacobian(mat &J, vec &V, vec &D, uint npq, uint npv);
-		
-		double mu(const mat &J, mat &J2, const vec &F, vec &dV, vec &dD, vec & dx, uint npq, uint npv);
+		void Jacobian(mat& J, const vec& V, const vec& D, uint npq, uint npv);
+
+		double mu(const mat& J, mat& J2, const vec& F, const vec& dV,
+		          const vec& dD, const vec& dx, uint npq, uint npv);
 
 		/// Calculate the power increments.
-		void get_power_inc(vec &PQinc, uint npq, uint npv); //PQinc is passed by refference
+		void get_power_inc(vec& PQinc, uint npq, uint npv);
 
 		/// Calculate the reactive power of the bus k (usefull for PV uses).
-		void calculate_Q(uint npq, uint npv); //calculate the reative power at the PV buses
+		void calculate_Q(uint npq, uint npv);
 
 		/// Calculate the active power at a bus.
-		double P(uint k);
+		[[nodiscard]] double P(uint k) const;
 
 		/// Calculate the reactive power at a bus.
-		double Q(uint k);
+		[[nodiscard]] double Q(uint k) const;
 
 		void update_solution(vec X, uint npq, uint npv);
-		
-		void get_increments(vec X, vec &incV, vec &incD, uint npq, uint npv);
+
+		void get_increments(const vec& X, vec& incV, vec& incD, uint npq,
+		                    uint npv);
 
 		/// Calculate the slack bus power
 		void calculate_slack_power();
 
-		/// This function corects the PV buses that exeed the reative power limit.
-		void correct_PVbuses_violating_Q(uint &npq, uint &npv, mat &J, vec &K, vec &X);
+		/// This function corects the PV buses that exeed the reative power
+		/// limit.
+		void correct_PVbuses_violating_Q(uint& npq, uint& npv, mat& J, vec& K,
+		                                 vec& X);
 	};
 }

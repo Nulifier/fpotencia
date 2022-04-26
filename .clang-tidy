@@ -1,4 +1,4 @@
-Checks: "bugprone-*,cert-*,concurrency-*,cppcoreguidelines-*,-cppcoreguidelines-non-private-member-variables-in-classes,google-*,-google-readability-namespace-comments,hicpp-*,misc-*,-misc-non-private-member-variables-in-classes,modernize-*,-modernize-use-trailing-return-type,performance-*,readability-*,-readability-identifier-length,-*-magic-numbers,-*-use-auto"
+Checks: "bugprone-*,cert-*,concurrency-*,cppcoreguidelines-*,-cppcoreguidelines-non-private-member-variables-in-classes,google-*,-google-readability-namespace-comments,-google-runtime-references,hicpp-*,misc-*,-misc-non-private-member-variables-in-classes,modernize-*,-modernize-use-trailing-return-type,performance-*,readability-*,-readability-identifier-length,-*-magic-numbers,-*-use-auto"
 CheckOptions:
   - key: bugprone-exception-escape.FunctionsThatShouldNotThrow
     value: WinMain,SDL_main

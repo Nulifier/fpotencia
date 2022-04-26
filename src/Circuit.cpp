@@ -59,8 +59,6 @@ namespace fPotencia {
 
 		if (n > 0) {
 			Y = sp_cx_mat(n, n);
-			// Ymod = sp_mat(n, n);
-			// Yang = sp_mat(n, n);
 			// Add the shunt admittances
 			for (auto& shunt : shunts) {
 				shunt.get_element_Y(n, Y);
@@ -284,21 +282,17 @@ namespace fPotencia {
 		}
 	}
 
-	/*
-	 * Examines the load and generatio objects and returns the maximum value
-	 * of the load or generation power in absolute value
-	 */
-	double Circuit::get_max_power() {
+	double Circuit::get_max_power() const {
 		double mx = 0;
 
 		// Calculate the bus connected generation and load
-		for (auto& generator : generators) {
+		for (const auto& generator : generators) {
 			if (abs(generator.power) > mx) {
 				mx = abs(generator.power.real());
 			}
 		}
 
-		for (auto& load : loads) {
+		for (const auto& load : loads) {
 			if (abs(load.power) > mx) {
 				mx = abs(load.power.real());
 			}
@@ -466,49 +460,26 @@ namespace fPotencia {
 		calculate_flows(sol_);
 	}
 
-	/*
-	 * Gets the real part of a circuit admittance matrix element
-	 * at row i and column j
-	 */
-	double Circuit::G(int i, int j) const {
-		// cx_double com = (cx_double) (Y.coeff(i, j));
-		return Y.coeff(i, j).real();
-	}
-
-	/*
-	 * Gets the imaginary part of a circuit admittance matrix element
-	 * at row i and column j
-	 */
-	double Circuit::B(int i, int j) const {
-		// cx_double com = (cx_double) (Y.coeff(i, j));
-		return Y.coeff(i, j).imag();
-	}
-
-	/*
-	 * Prints the circuit element power flows and voltages
-	 */
-	void Circuit::print() {
-
+	void Circuit::print() const {
 		std::cout << "Sbase = " << Sbase << std::endl;
 
-		for (auto& line : lines) {
+		for (const auto& line : lines) {
 			line.print();
 		}
 
-		for (auto& transformer : transformers) {
+		for (const auto& transformer : transformers) {
 			transformer.print();
 		}
 
-		for (auto& shunt : shunts) {
+		for (const auto& shunt : shunts) {
 			shunt.print();
 		}
 
-		for (auto& buse : buses) {
+		for (const auto& buse : buses) {
 			buse.print();
 		}
 	}
 
-	/**/
 	void Circuit::print_buses_state() {
 		for (uint i = 0; i < buses.size(); i++) {
 			std::cout << i << ": "
@@ -517,7 +488,7 @@ namespace fPotencia {
 		}
 	}
 
-	void Circuit::printCXMat(cx_mat m, const std::string& header) const {
+	void Circuit::printCXMat(const cx_mat& m, const std::string& header) const {
 		std::cout << header << std::endl;
 		for (uint i = 0; i < buses.size(); i++) {
 			for (uint j = 0; j < buses.size(); j++) {
@@ -529,7 +500,7 @@ namespace fPotencia {
 		}
 	}
 
-	void Circuit::printMat(sp_mat m, const std::string& header) const {
+	void Circuit::printMat(const sp_mat& m, const std::string& header) const {
 		std::cout << header << std::endl;
 		for (uint i = 0; i < buses.size(); i++) {
 			for (uint j = 0; j < buses.size(); j++) {
@@ -622,4 +593,4 @@ namespace fPotencia {
 	previous values of voltage (and Q, D in case of PV buses)
 	generate_initial_solution(true);
 	}*/
-} // namespace fPotencia
+}

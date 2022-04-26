@@ -73,7 +73,7 @@ namespace fPotencia {
 		}
 	}
 
-	double NRpolarSolver::P(uint k) {
+	double NRpolarSolver::P(uint k) const {
 		double val = 0.0;
 		for (uint j = 0; j < Model.buses.size(); j++) {
 			val += Sol.Vmag.coeff(j) *
@@ -83,7 +83,7 @@ namespace fPotencia {
 		return Sol.Vmag.coeff(k) * val;
 	}
 
-	double NRpolarSolver::Q(uint k) {
+	double NRpolarSolver::Q(uint k) const {
 		double val = 0.0;
 		for (uint j = 0; j < Model.buses.size(); j++) {
 			val += Sol.Vmag.coeff(j) *
@@ -130,7 +130,7 @@ namespace fPotencia {
 		for (unsigned int k : lst) {
 			LastPV.erase(std::remove(LastPV.begin(), LastPV.end(), k),
 			             LastPV.end());
-}
+		}
 
 		PQPV.clear();
 		PQPV.reserve(LastPQ.size() + LastPV.size()); // preallocate memory
@@ -138,7 +138,8 @@ namespace fPotencia {
 		PQPV.insert(PQPV.end(), LastPV.begin(), LastPV.end());
 	}
 
-	void NRpolarSolver::Jacobian(mat& J, vec& V, vec& D, uint npq, uint npv) {
+	void NRpolarSolver::Jacobian(mat& J, const vec& V, const vec& D, uint npq,
+	                             uint npv) {
 		// matrix(rows, cols)
 		uint npqpv = npq + npv;
 
@@ -291,8 +292,8 @@ namespace fPotencia {
 		return x;
 	}
 
-	double NRpolarSolver::mu(const mat& J, mat& J2, const vec& F, vec& dV,
-	                         vec& dD, vec& dx, uint npq, uint npv) {
+	double NRpolarSolver::mu(const mat& J, mat& J2, const vec& F, const vec& dV,
+	                         const vec& dD, const vec& dx, uint npq, uint npv) {
 		Jacobian(J2, dV, dD, npq, npv);
 
 		vec b = J * (dx);
@@ -330,8 +331,9 @@ namespace fPotencia {
 		}
 	}
 
-	bool NRpolarSolver::converged(const vec& PQinc, uint npqpvpq) const {
-		for (uint k = 0; k < npqpvpq; k++) {
+	bool NRpolarSolver::converged(const vec& PQinc,
+	                              unsigned int npqpvpq) const {
+		for (unsigned int k = 0; k < npqpvpq; k++) {
 			if (abs(PQinc.coeff(k)) > tolerance) {
 				return false;
 			}
@@ -340,8 +342,8 @@ namespace fPotencia {
 		return true;
 	}
 
-	void NRpolarSolver::get_increments(vec X, vec& incV, vec& incD, uint npq,
-	                                   uint npv) {
+	void NRpolarSolver::get_increments(const vec& X, vec& incV, vec& incD,
+	                                   uint npq, uint npv) {
 
 		uint npqpv = npq + npv;
 
